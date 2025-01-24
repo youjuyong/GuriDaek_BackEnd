@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTO Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.spring_jpa.data.GuriSQL_COMM">
+
+    <!-- 탈것 헤더 탑승 조건 공통 코드 -->
+    <select id="horseRideLimitType" resultType="map">
+        SELECT  COMM_CD
+              , COMM_CLSF_CD
+              , COMM_CD_KOR_NAME
+              , COMM_CD_ENG_NAME
+              , RMRK
+              , USE_YN
+              , REG_ID
+              , TO_CHAR(REG_DT,'YYYY-MM-DD HH24:MI:SS') REG_DT
+          FROM ( SELECT * FROM TB_COMM_CD WHERE USE_YN = 'Y' )
+         WHERE 1=1
+           AND COMM_CLSF_CD = 'HUCO'
+    </select>
+
+</mapper>
