@@ -17,6 +17,7 @@ import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,12 +28,13 @@ import java.util.Map;
 
 @RestController
 @Slf4j
+@CrossOrigin("*")
 @RequiredArgsConstructor
 @RequestMapping("/horse")
 public class HorseController implements BackendApi {
 
     private final GuriSQL_COMM commSQL;
-    private final BitSttsRepo bitSttsRepo;
+
     @Override
     @PostConstruct
     public void assertConnection() {
@@ -55,10 +57,18 @@ public class HorseController implements BackendApi {
     )
     public ResponseEntity<?> getHorseStallTableHeader() {
         Map<String, List<Map<String, Object>>> resultList = new HashMap<String, List<Map<String, Object>>>();
-		List<Map<String, Object>> rideLimitType       =  commSQL.horseRideLimitType();
 
+		List<Map<String, Object>> rideLimitType          =  commSQL.horseRideLimitType();
+        List<Map<String, Object>> horseBurpType          =  commSQL.horseBurpType();
+        List<Map<String, Object>> horseLifeType          =  commSQL.horseLifeType();
+        List<Map<String, Object>> horseHouseBurpType     =  commSQL.horseHouseBurpType();
+        List<Map<String, Object>> horseHouseBurpPercent  =  commSQL.horseHouseBurpPercent();
 
 		resultList.put("rideLimitType", rideLimitType);
+		resultList.put("horseBurpType", horseBurpType);
+		resultList.put("horseLifeType", horseLifeType);
+		resultList.put("horseHouseBurpType", horseHouseBurpType);
+		resultList.put("horseHouseBurpPercent", horseHouseBurpPercent);
 
         return ResponseEntity.ok(resultList);
     }

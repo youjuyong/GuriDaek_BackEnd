@@ -17,4 +17,64 @@
            AND COMM_CLSF_CD = 'HUCO'
     </select>
 
+     <!-- 버프 종류 공통 코드 -->
+    <select id="horseBurpType" resultType="map">
+         SELECT COMM_CD
+              , COMM_CLSF_CD
+              , COMM_CD_KOR_NAME
+              , COMM_CD_ENG_NAME
+              , RMRK
+              , USE_YN
+              , REG_ID
+              , TO_CHAR(REG_DT,'YYYY-MM-DD HH24:MI:SS') REG_DT
+          FROM ( SELECT * FROM TB_COMM_CD WHERE USE_YN = 'Y' )
+         WHERE 1=1
+           AND COMM_CLSF_CD = 'ATKT'
+    </select>
+
+     <!-- 말 수명 코드 -->
+    <select id="horseLifeType" resultType="map">
+         SELECT COMM_CD
+              , COMM_CLSF_CD
+              , COMM_CD_KOR_NAME
+              , COMM_CD_ENG_NAME
+              , RMRK
+              , USE_YN
+              , REG_ID
+              , TO_CHAR(REG_DT,'YYYY-MM-DD HH24:MI:SS') REG_DT
+          FROM ( SELECT * FROM TB_COMM_CD WHERE USE_YN = 'Y' )
+         WHERE 1=1
+           AND COMM_CLSF_CD = 'HLIF'
+    </select>
+
+    <!-- 마굿간 버프 타입 코드 -->
+    <select id="horseHouseBurpType" resultType="map">
+         SELECT COMM_CD
+              , COMM_CLSF_CD
+              , COMM_CD_KOR_NAME
+              , COMM_CD_ENG_NAME
+              , RMRK
+              , USE_YN
+              , REG_ID
+              , TO_CHAR(REG_DT,'YYYY-MM-DD HH24:MI:SS') REG_DT
+          FROM ( SELECT * FROM TB_COMM_CD WHERE USE_YN = 'Y' )
+         WHERE 1=1
+           AND COMM_CLSF_CD = 'SHBP'
+    </select>
+
+    <!-- 마굿간 버프 비율 코드 -->
+    <select id="horseHouseBurpPercent" resultType="map">
+         SELECT COMM_CD
+              , COMM_CLSF_CD
+              , COMM_CD_KOR_NAME
+              , COMM_CD_ENG_NAME
+              , RMRK
+              , USE_YN
+              , REG_ID
+              , TO_CHAR(REG_DT,'YYYY-MM-DD HH24:MI:SS') REG_DT
+          FROM ( SELECT * FROM TB_COMM_CD WHERE USE_YN = 'Y' )
+         WHERE 1=1
+           AND COMM_CLSF_CD = 'SHBP'
+    </select>
+
 </mapper>
