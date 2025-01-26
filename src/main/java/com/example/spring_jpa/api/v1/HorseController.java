@@ -5,6 +5,7 @@ import com.example.spring_jpa.api.BackendApi;
 import com.example.spring_jpa.api.v1.repository.BitSttsRepo;
 import com.example.spring_jpa.api.v1.repository.TestRepo;
 import com.example.spring_jpa.data.GuriSQL_COMM;
+import com.example.spring_jpa.data.GuriSQL_HORSE;
 import com.example.spring_jpa.object.Bit;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -17,11 +18,9 @@ import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +33,7 @@ import java.util.Map;
 public class HorseController implements BackendApi {
 
     private final GuriSQL_COMM commSQL;
+    private final GuriSQL_HORSE horseSQL;
 
     @Override
     @PostConstruct
@@ -73,6 +73,29 @@ public class HorseController implements BackendApi {
         return ResponseEntity.ok(resultList);
     }
 
+    @Operation(method = "GET",
+            summary = "탈것 리스트 조회",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "성공, 페이로드에 array[json] 데이터 반환", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Bit.class)))),
+                    @ApiResponse(responseCode = "500", description = "실패, 에러 메시지 참조", content = @Content(schema = @Schema(implementation = ApiErrorMessage.class)))
+            }
+    )
+    @GetMapping(value = "list",
+            produces = {"application/json"}
+    )
+    public ResponseEntity<?> getHorseList(@RequestParam Map<String, String> map) {
+        System.out.println(map);
+        List<Map<String, Object>> resultList = horseSQL.horseList(map);
+ System.out.println(resultList);
+        return ResponseEntity.ok(resultList);
+    }
 
+     @GetMapping(value = "img-down",
+            produces = {"application/json"}
+    )
+    public int getFileDown() {
+
+            return 1;
+    }
 
 }

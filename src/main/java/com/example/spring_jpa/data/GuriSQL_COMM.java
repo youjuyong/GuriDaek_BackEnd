@@ -18,5 +18,6 @@ public interface GuriSQL_COMM {
     // 마굿간 탈것 버프 비율
     public List<Map<String, Object>> horseHouseBurpPercent ();
 
+
 }
 

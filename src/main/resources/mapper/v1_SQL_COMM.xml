@@ -30,6 +30,7 @@
           FROM ( SELECT * FROM TB_COMM_CD WHERE USE_YN = 'Y' )
          WHERE 1=1
            AND COMM_CLSF_CD = 'ATKT'
+      ORDER BY COMM_CD
     </select>
 
      <!-- 말 수명 코드 -->
@@ -60,6 +61,7 @@
           FROM ( SELECT * FROM TB_COMM_CD WHERE USE_YN = 'Y' )
          WHERE 1=1
            AND COMM_CLSF_CD = 'SHBP'
+      ORDER BY COMM_CD
     </select>
 
     <!-- 마굿간 버프 비율 코드 -->
@@ -74,7 +76,8 @@
               , TO_CHAR(REG_DT,'YYYY-MM-DD HH24:MI:SS') REG_DT
           FROM ( SELECT * FROM TB_COMM_CD WHERE USE_YN = 'Y' )
          WHERE 1=1
-           AND COMM_CLSF_CD = 'SHBP'
+           AND COMM_CLSF_CD = 'SHBU'
+      ORDER BY COMM_CD
     </select>
 
 </mapper>
