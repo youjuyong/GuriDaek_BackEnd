@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTO Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.spring_jpa.data.GuriSQL_STAT">
+
+    <!-- 양이 순위 통계 -->
+    <select id="yangiRankList" resultType="map" parameterType="map">
+        WITH YES_STAT AS (
+      		 SELECT AA.VILLAGE_ID
+      		     ,  AA.VILLAGE_NAME
+      		     , AA.KILL AS YES_KILL
+     	 	     , ROW_NUMBER() OVER (ORDER BY AA.KILL DESC,TO_NUMBER(AA.VILLAGE_ID) ASC) AS YES_RANK
+       FROM
+	       ( SELECT
+	               A.VILLAGE_ID
+	             , A.VILLAGE_NAME
+	             , NVL(SUM(B.KILL),0) KILL
+	        FROM ( SELECT * FROM TB_VILLAGE WHERE DEL_YN = 'N' ) A, ( SELECT * FROM TT_YANG_WAR_INFO WHERE TO_DATE(STAT_HH_STND,'YYYY-MM-DD HH24') BETWEEN  TRUNC(SYSDATE,'IW') - 7 AND TRUNC(SYSDATE,'IW') - 7 + 6 + 0.99999 ) B
+	        WHERE A.VILLAGE_ID = B.VILLAGE_ID(+)
+	          AND A.VILLAGE_STAT_TYPE <![CDATA[<>]]> 'VSCD3'
+	       GROUP BY A.VILLAGE_ID , A.VILLAGE_NAME
+	       ) AA
+       ),
+        BYES_STAT AS (
+       		 SELECT AA.VILLAGE_ID
+      			  , AA.KILL AS BYES_KILL
+     	  		  , ROW_NUMBER() OVER (ORDER BY AA.KILL DESC,TO_NUMBER(AA.VILLAGE_ID) ASC ) AS BYES_RANK
+       		  FROM
+			       ( SELECT
+			         	  A.VILLAGE_ID
+			         	, NVL(SUM(B.KILL),0) KILL
+			        FROM ( SELECT * FROM TB_VILLAGE WHERE DEL_YN = 'N' ) A, ( SELECT * FROM TT_YANG_WAR_INFO WHERE TO_DATE(STAT_HH_STND,'YYYY-MM-DD HH24') BETWEEN  TRUNC(SYSDATE,'IW') - 14 AND TRUNC(SYSDATE,'IW') - 14 + 6 + 0.99999 ) B
+			        WHERE A.VILLAGE_ID = B.VILLAGE_ID(+)
+			          AND A.VILLAGE_STAT_TYPE  <![CDATA[<>]]> 'VSCD3'
+			       GROUP BY A.VILLAGE_ID
+			      ) AA
+       )
+      SELECT A.VILLAGE_ID
+           , A.YES_KILL
+           , A.VILLAGE_NAME
+           , B.BYES_KILL
+           , A.YES_RANK
+           , B.BYES_RANK
+           , CASE WHEN ( A.YES_RANK - B.BYES_RANK ) <![CDATA[<]]> 0 AND ( A.YES_KILL != 0 OR B.BYES_KILL != 0 ) THEN 'UP'
+           		  WHEN ( A.YES_RANK - B.BYES_RANK ) <![CDATA[>]]> 0 AND ( A.YES_KILL != 0 OR B.BYES_KILL != 0 ) THEN 'DOWN'
+           		  ELSE 'NORMAL'
+           		  END DIFF_TYPE
+           , ABS( A.YES_RANK - B.BYES_RANK) DIFF_NUM
+      	   , TO_CHAR( TRUNC(SYSDATE,'IW') - 7 , 'MM-DD' )  || ' ~ '  || TO_CHAR( TRUNC(SYSDATE,'IW') - 7 + 6 + 0.99999, 'MM-DD' ) AS STAT_DAY
+        FROM YES_STAT A, BYES_STAT B
+       WHERE A.VILLAGE_ID = B.VILLAGE_ID(+)
+         AND ROWNUM <![CDATA[<=]]> 15
+    ORDER BY A.YES_RANK
+    </select>
+
+</mapper>

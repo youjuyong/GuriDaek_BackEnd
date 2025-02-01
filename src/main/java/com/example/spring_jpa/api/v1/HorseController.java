@@ -84,9 +84,7 @@ public class HorseController implements BackendApi {
             produces = {"application/json"}
     )
     public ResponseEntity<?> getHorseList(@RequestParam Map<String, String> map) {
-        System.out.println(map);
         List<Map<String, Object>> resultList = horseSQL.horseList(map);
- System.out.println(resultList);
         return ResponseEntity.ok(resultList);
     }
 
