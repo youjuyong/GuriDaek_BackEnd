@@ -19,6 +19,7 @@
          		 , NVL(B.MAX_FORCE, 0)             MAX_FORCE
          		 , NVL(B.MAX_MAGIC_FORCE, 0)       MAX_MAGIC_FORCE
                  , NVL(B.BIG_SHOP_PRICE,'정보없음')  BIG_SHOP_PRICE
+                 , NVL(B.SPECIAL_BURF_NUM, 0)  SPECIAL_BURF_NUM
           FROM TB_HORSE A, TB_HORSE_DETL B
          WHERE 1=1
            AND A.HORSE_ID = B.HORSE_ID(+)
