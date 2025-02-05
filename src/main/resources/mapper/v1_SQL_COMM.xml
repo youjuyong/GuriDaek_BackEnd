@@ -4,61 +4,57 @@
 
     <!-- 탈것 헤더 탑승 조건 공통 코드 -->
     <select id="horseRideLimitType" resultType="map">
-        SELECT  COMM_CD
-              , COMM_CLSF_CD
-              , COMM_CD_KOR_NAME
-              , COMM_CD_ENG_NAME
-              , RMRK
-              , USE_YN
-              , REG_ID
-              , TO_CHAR(REG_DT,'YYYY-MM-DD HH24:MI:SS') REG_DT
-          FROM ( SELECT * FROM TB_COMM_CD WHERE USE_YN = 'Y' )
+        SELECT   A.COMM_CD
+              , A.COMM_CLSF_CD
+              , A.COMM_CD_KOR_NAME
+              , A.COMM_CD_ENG_NAME
+              , A.RMRK
+              , A.USE_YN
+              , A.REG_ID
+          FROM ( SELECT * FROM kf99.TB_COMM_CD WHERE USE_YN = 'Y' ) A
          WHERE 1=1
-           AND COMM_CLSF_CD = 'HUCO'
+           AND A.COMM_CLSF_CD = 'HUCO'
     </select>
 
      <!-- 버프 종류 공통 코드 -->
     <select id="horseBurpType" resultType="map">
-         SELECT COMM_CD
-              , COMM_CLSF_CD
-              , COMM_CD_KOR_NAME
-              , COMM_CD_ENG_NAME
-              , RMRK
-              , USE_YN
-              , REG_ID
-              , TO_CHAR(REG_DT,'YYYY-MM-DD HH24:MI:SS') REG_DT
-          FROM ( SELECT * FROM TB_COMM_CD WHERE USE_YN = 'Y' )
+         SELECT  A.COMM_CD
+              , A.COMM_CLSF_CD
+              , A.COMM_CD_KOR_NAME
+              , A.COMM_CD_ENG_NAME
+              , A.RMRK
+              , A.USE_YN
+              , A.REG_ID
+          FROM ( SELECT * FROM kf99.TB_COMM_CD WHERE USE_YN = 'Y' ) A
          WHERE 1=1
-           AND COMM_CLSF_CD = 'ATKT'
-      ORDER BY COMM_CD
+           AND A.COMM_CLSF_CD = 'ATKT'
+      ORDER BY A.COMM_CD
     </select>
 
      <!-- 말 수명 코드 -->
     <select id="horseLifeType" resultType="map">
-         SELECT COMM_CD
-              , COMM_CLSF_CD
-              , COMM_CD_KOR_NAME
-              , COMM_CD_ENG_NAME
-              , RMRK
-              , USE_YN
-              , REG_ID
-              , TO_CHAR(REG_DT,'YYYY-MM-DD HH24:MI:SS') REG_DT
-          FROM ( SELECT * FROM TB_COMM_CD WHERE USE_YN = 'Y' )
+         SELECT  A.COMM_CD
+              , A.COMM_CLSF_CD
+              , A.COMM_CD_KOR_NAME
+              , A.COMM_CD_ENG_NAME
+              , A.RMRK
+              , A.USE_YN
+              , A.REG_ID
+          FROM ( SELECT * FROM kf99.TB_COMM_CD WHERE USE_YN = 'Y' ) A
          WHERE 1=1
-           AND COMM_CLSF_CD = 'HLIF'
+           AND A.COMM_CLSF_CD = 'HLIF'
     </select>
 
     <!-- 마굿간 버프 타입 코드 -->
     <select id="horseHouseBurpType" resultType="map">
-         SELECT COMM_CD
-              , COMM_CLSF_CD
-              , COMM_CD_KOR_NAME
-              , COMM_CD_ENG_NAME
-              , RMRK
-              , USE_YN
-              , REG_ID
-              , TO_CHAR(REG_DT,'YYYY-MM-DD HH24:MI:SS') REG_DT
-          FROM ( SELECT * FROM TB_COMM_CD WHERE USE_YN = 'Y' )
+         SELECT A.COMM_CD
+              , A.COMM_CLSF_CD
+              , A.COMM_CD_KOR_NAME
+              , A.COMM_CD_ENG_NAME
+              , A.RMRK
+              , A.USE_YN
+              , A.REG_ID
+          FROM ( SELECT * FROM kf99.TB_COMM_CD WHERE USE_YN = 'Y' ) A
          WHERE 1=1
            AND COMM_CLSF_CD = 'SHBP'
       ORDER BY COMM_CD
@@ -66,18 +62,17 @@
 
     <!-- 마굿간 버프 비율 코드 -->
     <select id="horseHouseBurpPercent" resultType="map">
-         SELECT COMM_CD
-              , COMM_CLSF_CD
-              , COMM_CD_KOR_NAME
-              , COMM_CD_ENG_NAME
-              , RMRK
-              , USE_YN
-              , REG_ID
-              , TO_CHAR(REG_DT,'YYYY-MM-DD HH24:MI:SS') REG_DT
-          FROM ( SELECT * FROM TB_COMM_CD WHERE USE_YN = 'Y' )
+         SELECT A.COMM_CD
+              , A.COMM_CLSF_CD
+              , A.COMM_CD_KOR_NAME
+              , A.COMM_CD_ENG_NAME
+              , A.RMRK
+              , A.USE_YN
+              , A.REG_ID
+          FROM ( SELECT * FROM kf99.TB_COMM_CD WHERE USE_YN = 'Y' ) A
          WHERE 1=1
-           AND COMM_CLSF_CD = 'SHBU'
-      ORDER BY COMM_CD
+           AND A.COMM_CLSF_CD = 'SHBU'
+      ORDER BY A.COMM_CD
     </select>
 
 </mapper>

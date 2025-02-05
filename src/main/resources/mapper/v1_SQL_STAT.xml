@@ -3,38 +3,40 @@
 <mapper namespace="com.example.spring_jpa.data.GuriSQL_STAT">
 
     <!-- 양이 순위 통계 -->
-    <select id="yangiRankList" resultType="map" parameterType="map">
-        WITH YES_STAT AS (
-      		 SELECT AA.VILLAGE_ID
-      		     ,  AA.VILLAGE_NAME
-      		     , AA.KILL AS YES_KILL
-     	 	     , ROW_NUMBER() OVER (ORDER BY AA.KILL DESC,TO_NUMBER(AA.VILLAGE_ID) ASC) AS YES_RANK
+    <select id="yangiRankList" resultType="map" >
+          WITH YES_STAT AS (
+      		 SELECT    AA.VILLAGE_ID
+      		     , AA.VILLAGE_NAME
+      		     , AA.KILL_YANG AS YES_KILL
+      		     , ROW_NUMBER() OVER (ORDER BY AA.KILL_YANG DESC,cast(AA.VILLAGE_ID as signed) ASC) AS YES_RANK
        FROM
-	       ( SELECT
-	               A.VILLAGE_ID
-	             , A.VILLAGE_NAME
-	             , NVL(SUM(B.KILL),0) KILL
-	        FROM ( SELECT * FROM TB_VILLAGE WHERE DEL_YN = 'N' ) A, ( SELECT * FROM TT_YANG_WAR_INFO WHERE TO_DATE(STAT_HH_STND,'YYYY-MM-DD HH24') BETWEEN  TRUNC(SYSDATE,'IW') AND TRUNC(SYSDATE,'IW')+ 6 + 0.99999 ) B
-	        WHERE A.VILLAGE_ID = B.VILLAGE_ID(+)
-	          AND A.VILLAGE_STAT_TYPE <![CDATA[<>]]> 'VSCD3'
-	       GROUP BY A.VILLAGE_ID , A.VILLAGE_NAME
+	       (  SELECT
+			         	  A.VILLAGE_ID
+			         	  , A.VILLAGE_NAME
+			         	, IFNULL (SUM(B.KILL_YANG),0) KILL_YANG
+			        FROM ( SELECT * FROM kf99.TB_VILLAGE WHERE DEL_YN = 'N' ) A LEFT OUTER JOIN ( SELECT * FROM kf99.TT_YANG_WAR_INFO WHERE STR_TO_DATE(STAT_HH_STND,'%Y%m%d%H%i%s') BETWEEN  ADDDATE( CURDATE(), - WEEKDAY(CURDATE()) + 0 ) AND ADDDATE( CURDATE(), - WEEKDAY(CURDATE()) + 6 ) ) B
+			        ON A.VILLAGE_ID = B.VILLAGE_ID
+			        WHERE 1=1
+			          AND A.VILLAGE_STAT_TYPE  <![CDATA[<>]]> 'VSCD3'
+			       GROUP BY A.VILLAGE_ID
 	       ) AA
        ),
         BYES_STAT AS (
-       		 SELECT AA.VILLAGE_ID
-      			  , AA.KILL AS BYES_KILL
-     	  		  , ROW_NUMBER() OVER (ORDER BY AA.KILL DESC,TO_NUMBER(AA.VILLAGE_ID) ASC ) AS BYES_RANK
+       		 SELECT    AA.VILLAGE_ID
+      		     , AA.KILL_YANG AS BYES_KILL
+      		     , ROW_NUMBER() OVER (ORDER BY AA.KILL_YANG DESC,cast(AA.VILLAGE_ID as signed) ASC) AS BYES_RANK
        		  FROM
-			       ( SELECT
+	       		(  SELECT
 			         	  A.VILLAGE_ID
-			         	, NVL(SUM(B.KILL),0) KILL
-			        FROM ( SELECT * FROM TB_VILLAGE WHERE DEL_YN = 'N' ) A, ( SELECT * FROM TT_YANG_WAR_INFO WHERE TO_DATE(STAT_HH_STND,'YYYY-MM-DD HH24') BETWEEN  TRUNC(SYSDATE,'IW') - 7 AND TRUNC(SYSDATE,'IW') - 7 + 6 + 0.99999 ) B
-			        WHERE A.VILLAGE_ID = B.VILLAGE_ID(+)
-			          AND A.VILLAGE_STAT_TYPE  <![CDATA[<>]]> 'VSCD3'
+			         	, IFNULL (SUM(B.KILL_YANG),0) KILL_YANG
+			        FROM ( SELECT * FROM kf99.TB_VILLAGE WHERE DEL_YN = 'N' ) A LEFT OUTER JOIN ( SELECT * FROM kf99.TT_YANG_WAR_INFO WHERE STR_TO_DATE(STAT_HH_STND,'%Y%m%d%H%i%s') BETWEEN  ADDDATE( CURDATE(), - WEEKDAY(CURDATE())  -7 ) AND ADDDATE( CURDATE(), - WEEKDAY(CURDATE()) + 6 -7) ) B
+			        ON A.VILLAGE_ID = B.VILLAGE_ID
+			        WHERE 1=1
+			          AND A.VILLAGE_STAT_TYPE <![CDATA[<>]]> 'VSCD3'
 			       GROUP BY A.VILLAGE_ID
-			      ) AA
+	      	 ) AA
        )
-        SELECT AA.*
+       SELECT AA.*
           FROM (
 			  SELECT A.VILLAGE_ID
 				   , A.YES_KILL
@@ -42,19 +44,17 @@
 				   , B.BYES_KILL
 				   , A.YES_RANK
 				   , B.BYES_RANK
-				   , CASE WHEN ( A.YES_RANK - B.BYES_RANK ) <![CDATA[<]]> 0 AND ( A.YES_KILL != 0 OR B.BYES_KILL != 0 ) THEN 'UP'
-						  WHEN ( A.YES_RANK - B.BYES_RANK ) <![CDATA[>]]> 0 AND ( A.YES_KILL != 0 OR B.BYES_KILL != 0 ) THEN 'DOWN'
+				   , CASE WHEN ( cast(A.YES_RANK AS signed) - cast(B.BYES_RANK AS signed) ) <![CDATA[<]]> 0 THEN 'UP'
+						  WHEN ( cast(A.YES_RANK AS signed) - cast(B.BYES_RANK AS signed) ) <![CDATA[>]]> 0 THEN 'DOWN'
 						  ELSE 'NORMAL'
 						  END DIFF_TYPE
-				   , ABS( A.YES_RANK - B.BYES_RANK) DIFF_NUM
-				   , TO_CHAR( TRUNC(SYSDATE,'IW') , 'MM-DD' )  || ' ~ '  || TO_CHAR( TRUNC(SYSDATE,'IW') + 6 + 0.99999, 'MM-DD' ) AS STAT_DAY
-				FROM YES_STAT A, BYES_STAT B
-			   WHERE A.VILLAGE_ID = B.VILLAGE_ID(+)
+				   , ABS( cast(A.YES_RANK AS signed) - cast(B.BYES_RANK AS signed))  DIFF_NUM
+				   ,  CONCAT( DATE_FORMAT  ( ADDDATE( CURDATE(), - WEEKDAY(CURDATE()) + 0 ), '%m%d'), ' ~ ' , DATE_FORMAT  ( ADDDATE( CURDATE(), - WEEKDAY(CURDATE()) + 6 ), '%m%d')) AS STAT_DAY
+				FROM YES_STAT A LEFT OUTER JOIN BYES_STAT B ON A.VILLAGE_ID = B.VILLAGE_ID
+			   WHERE 1=1
 			   ORDER BY A.YES_RANK
          ) AA
-        WHERE ROWNUM <![CDATA[<=]]> 15
-
-
+        LIMIT 15
     </select>
 
 </mapper>
