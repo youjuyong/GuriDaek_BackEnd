@@ -112,7 +112,7 @@
 			         	  A.VILLAGE_ID
 			         	  , A.VILLAGE_NAME
 			         	  , B.HUMAN_CNT
-			        FROM ( SELECT * FROM kf99.TB_VILLAGE WHERE DEL_YN = 'N' ) A LEFT OUTER JOIN ( SELECT * FROM kf99.tt_village_count_info where STAT_DD_STND =  date_format(SUBDATE(NOW(), 1), '%Y%m%d')  ) B
+			        FROM ( SELECT * FROM kf99.TB_VILLAGE WHERE DEL_YN = 'N' ) A LEFT OUTER JOIN ( SELECT * FROM kf99.TT_VILLAGE_COUNT_INFO where STAT_DD_STND =  date_format(SUBDATE(NOW(), 1), '%Y%m%d')  ) B
 			        ON A.VILLAGE_ID = B.VILLAGE_ID
 			        WHERE 1=1
 			          AND A.VILLAGE_STAT_TYPE <![CDATA[<>]]> 'VSCD3'
@@ -128,7 +128,7 @@
 			         	  A.VILLAGE_ID
 			         	  , A.VILLAGE_NAME
 			         	  , B.HUMAN_CNT
-			        FROM ( SELECT * FROM kf99.TB_VILLAGE WHERE DEL_YN = 'N' ) A LEFT OUTER JOIN ( SELECT * FROM kf99.tt_village_count_info where STAT_DD_STND =  date_format(SUBDATE(NOW(), 2), '%Y%m%d')  ) B
+			        FROM ( SELECT * FROM kf99.TB_VILLAGE WHERE DEL_YN = 'N' ) A LEFT OUTER JOIN ( SELECT * FROM kf99.TT_VILLAGE_COUNT_INFO where STAT_DD_STND =  date_format(SUBDATE(NOW(), 2), '%Y%m%d')  ) B
 			        ON A.VILLAGE_ID = B.VILLAGE_ID
 			        WHERE 1=1
 			          AND A.VILLAGE_STAT_TYPE  <![CDATA[<>]]> 'VSCD3'
