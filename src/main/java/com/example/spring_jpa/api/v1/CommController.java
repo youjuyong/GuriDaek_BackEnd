@@ -24,7 +24,7 @@ import java.util.List;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/comm")
+@RequestMapping("/api/comm")
 public class CommController implements BackendApi {
 
     private Bit bit;
