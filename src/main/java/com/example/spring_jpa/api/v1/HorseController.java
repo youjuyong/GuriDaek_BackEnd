@@ -29,7 +29,7 @@ import java.util.Map;
 @Slf4j
 @CrossOrigin("*")
 @RequiredArgsConstructor
-@RequestMapping("/horse")
+@RequestMapping("/api/horse")
 public class HorseController implements BackendApi {
 
     private final GuriSQL_COMM commSQL;
