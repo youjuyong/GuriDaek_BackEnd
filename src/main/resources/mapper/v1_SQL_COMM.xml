@@ -31,7 +31,7 @@
       ORDER BY A.COMM_CD
     </select>
 
-     <!-- 말 수명 코드 -->
+     <!-- 말 수명 코드  -->
     <select id="horseLifeType" resultType="map">
          SELECT  A.COMM_CD
               , A.COMM_CLSF_CD
