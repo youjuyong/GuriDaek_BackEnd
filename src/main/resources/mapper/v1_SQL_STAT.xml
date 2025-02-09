@@ -142,11 +142,11 @@
 				   , IFNULL(B.BYES_HUMAN_CNT,0) as BYES_HUMAN_CNT
 				   , A.YES_RANK
 				   , B.BYES_RANK
-				   , CASE WHEN ( cast(A.YES_RANK AS signed) - cast(B.BYES_RANK AS signed) ) <![CDATA[<]]> 0 THEN 'UP'
-						  WHEN ( cast(A.YES_RANK AS signed) - cast(B.BYES_RANK AS signed) ) <![CDATA[>]]> 0 THEN 'DOWN'
+				   , CASE WHEN ( cast(A.YES_HUMAN_CNT AS signed) - cast(B.BYES_HUMAN_CNT AS signed) ) <![CDATA[<]]> 0 THEN 'UP'
+						  WHEN ( cast(A.YES_HUMAN_CNT AS signed) - cast(B.BYES_HUMAN_CNT AS signed) ) <![CDATA[>]]> 0 THEN 'DOWN'
 						  ELSE 'NORMAL'
 						  END DIFF_TYPE
-				   , ABS( cast(A.YES_RANK AS signed) - cast(B.BYES_RANK AS signed))  DIFF_NUM
+				   , ABS( cast(A.YES_HUMAN_CNT AS signed) - cast(B.BYES_HUMAN_CNT AS signed))  DIFF_NUM
 			  	   , concat(date_format(SUBDATE(NOW(), 1), '%Y'),'.',  date_format(SUBDATE(NOW(), 1), '%m'), '.', date_format(SUBDATE(NOW(), 1), '%d')) YES_DATE
 				FROM YES_STAT A LEFT OUTER JOIN BYES_STAT B ON A.VILLAGE_ID = B.VILLAGE_ID
 			   WHERE 1=1

@@ -39,7 +39,7 @@
                AND HORSE_BURF_PER_TYPE = #{horseHouseBurpPercent}
            </if>
            <if test="keyword != null and !keyword.equalsIgnoreCase('')">
-               AND A.HORSE_NAME      LIKE  '%'  || #{keyword} || '%'
+               AND A.HORSE_NAME      LIKE  '%${keyword}%'
            </if>
       ORDER BY A.HORSE_NUM
 
