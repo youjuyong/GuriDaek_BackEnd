@@ -18,5 +18,8 @@ public interface GuriSQL_STAT {
     public void insertVillageHumanUpload(Map map);
     // 마을별 주민수 리스트
     public List<Map<String, Object>> selectVillageHumanCountList();
+    // 장인 업로드
+    public void insertCraftsManList(Map map);
+
 }
 

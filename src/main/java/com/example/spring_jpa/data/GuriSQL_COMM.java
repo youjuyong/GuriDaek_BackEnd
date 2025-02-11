@@ -18,6 +18,10 @@ public interface GuriSQL_COMM {
     // 마굿간 탈것 버프 비율
     public List<Map<String, Object>> horseHouseBurpPercent ();
 
+    // 장인 목록 헤더 장인 종류
+    public List<Map<String, Object>> craftsManMakeType ();
+    // 장인 마을 목록 표출
+    public List<Map<String, Object>> villageListInfo ();
 
 }
 

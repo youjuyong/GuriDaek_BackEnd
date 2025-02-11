@@ -222,10 +222,77 @@ public class StatController implements BackendApi {
     public ResponseEntity<?> selectVillageHumanCountList() {
         List<Map<String, Object>> resultList  = Lists.newArrayList();
 
+
+
+        return ResponseEntity.ok(resultList);
+    }
+
+    @Operation(method = "POST",
+            summary = "장인 리스트 업로드",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "성공, 페이로드에 array[json] 데이터 반환", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Bit.class)))),
+                    @ApiResponse(responseCode = "500", description = "실패, 에러 메시지 참조", content = @Content(schema = @Schema(implementation = ApiErrorMessage.class)))
+            }
+    )
+     @Transactional
+    @PostMapping(value = "crats-man-upload", produces = {"application/json"})
+    public ResponseEntity<?> postCraftsManUpload(HttpServletRequest request) {
+        FileInputStream fis = null;
+        String filePath = request.getSession().getServletContext().getRealPath("/");
+
         try {
-             resultList = statSQL.selectVillageHumanCountList();
-        } catch ( Exception ex ) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+              fis         = new FileInputStream(filePath +"/reportCrafts.xls");
+              Workbook wb = new HSSFWorkbook(fis);
+              Sheet sheet = wb.getSheetAt(0);
+
+               for ( int i = 1; i < sheet.getPhysicalNumberOfRows(); i++) {
+                    HashMap<String, Object> dataMap = Maps.newHashMap();
+
+                    Row row = sheet.getRow(i);
+                    if ( row == null ) {
+                        break;
+                    }
+
+                    if ( !String.valueOf(row.getCell(0)).isEmpty() && !String.valueOf(row.getCell(0)).equals("null") ) {
+                                 for ( int j = 0; j <= 5; j++ ) {
+                                     Cell cell = row.getCell(j);
+                                     String value = "";
+                                     if (cell != null) {
+                                         value = switch (cell.getCellType()) {
+                                             case STRING -> cell.getStringCellValue();
+                                             case NUMERIC -> {
+                                                 double numericCellValue = cell.getNumericCellValue();
+                                                 yield String.valueOf((int) numericCellValue);
+                                             }
+                                             default -> "";
+                                         };
+                                     }
+                                    if ( j == 0 ) {
+                                         dataMap.put("craftsId", value);
+                                    } else if ( j == 1) {
+
+                                        if ( value.equals("없음") ) {
+                                           int village_Id = 999;
+                                              dataMap.put("villageId", village_Id);
+                                        } else {
+                                          int  village_Id = statSQL.yangVillageList(value);
+                                              dataMap.put("villageId", village_Id);
+                                        }
+                                    } else if ( j == 2 ) {
+                                        dataMap.put("craftsManName", value);
+                                    } else if ( j == 3 ){
+                                        dataMap.put("craftsLevel", value);
+                                    } else if ( j == 4 ){
+                                        dataMap.put("handLevel", value);
+                                    } else {
+                                        dataMap.put("craftsType", value);
+                                    }
+                                 }
+                        }
+                    statSQL.insertCraftsManList(dataMap);
+               }
+        } catch ( RuntimeException | IOException ex ) {
+          return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body(BackendApi.getErrorMessage(
 							HttpStatus.INTERNAL_SERVER_ERROR.value(),
 							Message.TRANSACTION_FAILURE,
@@ -234,7 +301,8 @@ public class StatController implements BackendApi {
 					));
         }
 
-        return ResponseEntity.ok(resultList);
+
+        return ResponseEntity.ok(BackendApi.getSuccessMessage(HttpStatus.OK.value(), Message.SUCCESS));
     }
 
 }

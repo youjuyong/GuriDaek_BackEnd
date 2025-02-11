@@ -75,4 +75,22 @@
       ORDER BY A.COMM_CD
     </select>
 
+    <!-- 장인 헤드 공통코드 -->
+    <select id="craftsManMakeType" resultType="map">
+        SELECT *
+          FROM kf99.TB_COMM_CD
+         WHERE COMM_CLSF_CD = 'CMLC'
+           AND USE_YN = 'Y' ORDER BY COMM_CD
+    </select>
+
+    <!-- 마을 리스트 공통코드 -->
+    <select id="villageListInfo" resultType="map">
+         SELECT VILLAGE_ID
+              , VILLAGE_NAME
+           FROM kf99.TB_VILLAGE
+          WHERE VILLAGE_STAT_TYPE <![CDATA[<>]]> 'VSCD3'
+            AND DEL_YN = 'N'
+       ORDER BY cast(VILLAGE_ID as signed) ASC
+    </select>
+
 </mapper>
