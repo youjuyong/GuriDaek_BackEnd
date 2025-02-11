@@ -221,7 +221,7 @@ public class StatController implements BackendApi {
     )
     public ResponseEntity<?> selectVillageHumanCountList() {
         List<Map<String, Object>> resultList  = Lists.newArrayList();
-
+        resultList = statSQL.selectVillageHumanCountList();
 
 
         return ResponseEntity.ok(resultList);
