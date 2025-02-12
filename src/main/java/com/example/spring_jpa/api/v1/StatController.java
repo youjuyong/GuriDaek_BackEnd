@@ -289,6 +289,7 @@ public class StatController implements BackendApi {
                                     }
                                  }
                         }
+                    System.out.println("dataMap " + dataMap );
                     statSQL.insertCraftsManList(dataMap);
                }
         } catch ( RuntimeException | IOException ex ) {

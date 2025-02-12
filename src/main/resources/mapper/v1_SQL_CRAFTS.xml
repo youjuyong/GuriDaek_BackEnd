@@ -7,6 +7,7 @@
  	          A.CRAFT_MAN_ID
  	        , A.CRAFT_MAN_NAME
  	        , ( select COMM_CD_KOR_NAME from kf99.TB_COMM_CD tcc where COMM_CD = A.CRAFT_TYPE ) AS CRAFT_TYPE
+            , A.CRAFT_TYPE AS CRAFT_TYPE_CODE
  	        , A.CRAFT_VILLAGE_ID
             , A.CRAFT_LEVEL
  	        , A.CRAFT_HAND_SKILL
