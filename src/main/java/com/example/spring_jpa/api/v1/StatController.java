@@ -289,6 +289,9 @@ public class StatController implements BackendApi {
                                     }
                                  }
                         }
+                    if ( dataMap.isEmpty() ) {
+                        continue;
+                    }
                     System.out.println("dataMap " + dataMap );
                     statSQL.insertCraftsManList(dataMap);
                }

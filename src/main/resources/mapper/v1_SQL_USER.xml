@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTO Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.spring_jpa.data.GuriSQL_USER">
+
+	<select id="userMiddleCheck" resultType="map" parameterType="map">
+		SELECT *
+		  FROM kf99.TB_USER
+		 WHERE USER_ID = #{userId}
+	</select>
+
+	<insert id="insertUserInfo" parameterType="map">
+		INSERT INTO kf99.TB_USER
+		VALUES(
+		       #{userId}
+			, #{encryptPwd}
+			, #{userName}
+			, null
+			,null
+			, null
+			, null
+			, 'N'
+			, #{cityYn}
+			, 'N'
+			, null
+			, null
+			, NOW()
+	, NOW()
+			  )
+	</insert>
+</mapper>
