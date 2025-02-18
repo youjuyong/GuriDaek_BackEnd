@@ -1,11 +1,10 @@
 package com.example.spring_jpa.jwt;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import com.example.spring_jpa.object.Member;
+import lombok.*;
 
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -14,4 +13,16 @@ public class TokenDto {
     private String grantType;
     private String accessToken;
     private Long tokenExpiresIn;
+
+    private Member member;
+
+    @Override
+    public String toString() {
+        return "TokenDto{" +
+                "userId='" + userId + '\'' +
+                ", grantType='" + grantType + '\'' +
+                ", accessToken='" + accessToken + '\'' +
+                ", tokenExpiresIn=" + tokenExpiresIn +
+                '}';
+    }
 }

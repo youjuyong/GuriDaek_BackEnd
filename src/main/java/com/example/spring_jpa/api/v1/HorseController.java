@@ -2,25 +2,20 @@ package com.example.spring_jpa.api.v1;
 
 import com.example.spring_jpa.api.ApiErrorMessage;
 import com.example.spring_jpa.api.BackendApi;
-import com.example.spring_jpa.api.v1.repository.BitSttsRepo;
-import com.example.spring_jpa.api.v1.repository.TestRepo;
 import com.example.spring_jpa.data.GuriSQL_COMM;
 import com.example.spring_jpa.data.GuriSQL_HORSE;
-import com.example.spring_jpa.object.Bit;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.annotation.PostConstruct;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +43,7 @@ public class HorseController implements BackendApi {
     @Operation(method = "GET",
             summary = "탈것 테이블 헤더 공통 리스트 반환",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "성공, 페이로드에 array[json] 데이터 반환", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Bit.class)))),
+                    @ApiResponse(responseCode = "200", description = "성공, 페이로드에 array[json] 데이터 반환", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiResponses.class)))),
                     @ApiResponse(responseCode = "500", description = "실패, 에러 메시지 참조", content = @Content(schema = @Schema(implementation = ApiErrorMessage.class)))
             }
     )
@@ -76,7 +71,7 @@ public class HorseController implements BackendApi {
     @Operation(method = "GET",
             summary = "탈것 리스트 조회",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "성공, 페이로드에 array[json] 데이터 반환", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Bit.class)))),
+                    @ApiResponse(responseCode = "200", description = "성공, 페이로드에 array[json] 데이터 반환", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiResponses.class)))),
                     @ApiResponse(responseCode = "500", description = "실패, 에러 메시지 참조", content = @Content(schema = @Schema(implementation = ApiErrorMessage.class)))
             }
     )

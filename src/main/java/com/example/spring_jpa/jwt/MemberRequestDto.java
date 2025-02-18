@@ -28,4 +28,12 @@ public class MemberRequestDto {
     public UsernamePasswordAuthenticationToken toAuthentication() {
         return new UsernamePasswordAuthenticationToken(userId, userPwd);
     }
+
+    @Override
+    public String toString() {
+        return "MemberRequestDto{" +
+                "userId='" + userId + '\'' +
+                ", userPwd='" + userPwd + '\'' +
+                '}';
+    }
 }

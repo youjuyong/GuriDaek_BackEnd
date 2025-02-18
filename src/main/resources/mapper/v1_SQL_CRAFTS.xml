@@ -6,14 +6,14 @@
         select
  	          A.CRAFT_MAN_ID
  	        , A.CRAFT_MAN_NAME
- 	        , ( select COMM_CD_KOR_NAME from kf99.TB_COMM_CD tcc where COMM_CD = A.CRAFT_TYPE ) AS CRAFT_TYPE
+ 	        , ( select COMM_CD_KOR_NAME from sys.TB_COMM_CD tcc where COMM_CD = A.CRAFT_TYPE ) AS CRAFT_TYPE
             , A.CRAFT_TYPE AS CRAFT_TYPE_CODE
  	        , A.CRAFT_VILLAGE_ID
             , A.CRAFT_LEVEL
  	        , A.CRAFT_HAND_SKILL
  	        , date_format( A.UPD_DT, '%Y-%m-%d %H:%s:%i') UPD_DT
             , B.*
- 	      from kf99.TB_CRAFT_MAN_INFO A left outer join ( SELECT * FROM kf99.TB_VILLAGE WHERE DEL_YN ='N' ) B on A.CRAFT_VILLAGE_ID = B.VILLAGE_ID
+ 	      from sys.TB_CRAFT_MAN_INFO A left outer join ( SELECT * FROM sys.TB_VILLAGE WHERE DEL_YN ='N' ) B on A.CRAFT_VILLAGE_ID = B.VILLAGE_ID
           WHERE 1=1
            <if test="craftsManType != null and !craftsManType.equalsIgnoreCase('')">
                AND A.CRAFT_TYPE        = #{craftsManType}

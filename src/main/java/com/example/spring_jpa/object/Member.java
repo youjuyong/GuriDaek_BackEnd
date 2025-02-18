@@ -1,36 +1,39 @@
 package com.example.spring_jpa.object;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
+
 
 @Schema(description = "User")
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor
-@Entity
+@Entity(name = "tb_user")
 @Table(name = "tb_user")
 public class Member implements Serializable {
 
     @Id
     @Schema(description = "사용자 아이디")
-    @NotEmpty(message = "사용자 아이디를 입력하세요.")
     @Column(name = "user_id", nullable = false)
     private String userId;
 
     @Schema(description = "사용자 암호")
-    @NotEmpty(message = "사용자 암호를 입력하세요.")
-    @Column(name = "user_pwd", nullable = false)
+    @Column(name = "user_pwd")
     private String userPwd;
 
     @Schema(description = "사용자 이름")
-    @NotEmpty(message = "사용자 이름을 입력하세요.")
     @Column(name = "user_name")
     private String userName;
 
@@ -52,18 +55,18 @@ public class Member implements Serializable {
 
 
     @Schema(description = "삭제 여부 (Y/N)")
-    @Column(name = "del_yn", nullable = false, columnDefinition = "char(1)")
+    @Column(name = "del_yn", columnDefinition = "char(1)")
     private String deleted;
 
     @Schema(description = "의정부 주민 여부 (Y/N)")
-    @Column(name = "city_yn", nullable = false, columnDefinition = "char(1)")
+    @Column(name = "city_yn", columnDefinition = "char(1)")
     private String cityYn;
 
     @Schema(description = "마스터 권한 여부 (Y/N)")
-    @Column(name = "master_yn", nullable = false, columnDefinition = "char(1)")
+    @Column(name = "master_yn", columnDefinition = "char(1)")
     private String masterYn;
 
-     @Schema(description = "힌트 질문")
+    @Schema(description = "힌트 질문")
     @Column(name = "hint_ques")
     private String hintQuestion;
 
@@ -71,22 +74,26 @@ public class Member implements Serializable {
     @Column(name = "hint_ans")
     private String hintAnswer;
 
+    @Schema(description = "마을 주민 명")
+    @Column(name = "city_user_name")
+    private String cityUserName;
+
     @Schema(description = "수정 일시")
     @Column(name = "upd_dt")
-    private Date updatedDate;
+    private LocalDateTime updatedDate;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T' HH24:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T' HH24:mm:ss")
     @Schema(description = "등록 일시")
-    @Column(name = "reg_dt", nullable = false)
-    private Date registeredDate;
-
-
+    @Column(name = "reg_dt")
+    private LocalDateTime registeredDate;
 
     @Transient
     @Enumerated(EnumType.STRING)
     private Authority authority = Authority.ROLE_ADMIN;
 
     @Builder
-    public Member(String userId, String userPwd, String userName, String userTel, String userAddr, String userMobile, String userEmal, String deleted, String cityYn, String masterYn, String hintQuestion, String hintAnswer, Date updatedDate, Date registeredDate, Authority authority) {
+    public Member(String userId, String userPwd, String userName, String userTel, String userAddr, String userMobile, String userEmal, String deleted, String cityYn, String masterYn, String hintQuestion, String hintAnswer, String cityUserName, LocalDateTime updatedDate, LocalDateTime registeredDate, Authority authority) {
         this.userId = userId;
         this.userPwd = userPwd;
         this.userName = userName;
@@ -99,6 +106,7 @@ public class Member implements Serializable {
         this.masterYn = masterYn;
         this.hintQuestion = hintQuestion;
         this.hintAnswer = hintAnswer;
+        this.cityUserName = cityUserName;
         this.updatedDate = updatedDate;
         this.registeredDate = registeredDate;
         this.authority = authority;
@@ -119,6 +127,7 @@ public class Member implements Serializable {
                 ", masterYn='" + masterYn + '\'' +
                 ", hintQuestion='" + hintQuestion + '\'' +
                 ", hintAnswer='" + hintAnswer + '\'' +
+                ", cityUserName='" + cityUserName + '\'' +
                 ", updatedDate=" + updatedDate +
                 ", registeredDate=" + registeredDate +
                 ", authority=" + authority +

@@ -34,7 +34,8 @@ public class WebSecurityConfig {
                 .sessionManagement((sessionManagement) ->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling((exceptionConig) ->
-                        exceptionConig.authenticationEntryPoint(jwtAuthenticationEntryPoint))
+                        exceptionConig.authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                                .accessDeniedHandler(jwtAccessDeniedHandler))
                 .authorizeHttpRequests((authorizeRequests) ->
                         authorizeRequests.requestMatchers("/api/**").permitAll()
                                 .requestMatchers("/api/swagger-ui/**").permitAll()

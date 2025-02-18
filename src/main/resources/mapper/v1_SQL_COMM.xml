@@ -11,7 +11,7 @@
               , A.RMRK
               , A.USE_YN
               , A.REG_ID
-          FROM ( SELECT * FROM kf99.TB_COMM_CD WHERE USE_YN = 'Y' ) A
+          FROM ( SELECT * FROM sys.TB_COMM_CD WHERE USE_YN = 'Y' ) A
          WHERE 1=1
            AND A.COMM_CLSF_CD = 'HUCO'
     </select>
@@ -25,7 +25,7 @@
               , A.RMRK
               , A.USE_YN
               , A.REG_ID
-          FROM ( SELECT * FROM kf99.TB_COMM_CD WHERE USE_YN = 'Y' ) A
+          FROM ( SELECT * FROM sys.TB_COMM_CD WHERE USE_YN = 'Y' ) A
          WHERE 1=1
            AND A.COMM_CLSF_CD = 'ATKT'
       ORDER BY A.COMM_CD
@@ -40,7 +40,7 @@
               , A.RMRK
               , A.USE_YN
               , A.REG_ID
-          FROM ( SELECT * FROM kf99.TB_COMM_CD WHERE USE_YN = 'Y' ) A
+          FROM ( SELECT * FROM sys.TB_COMM_CD WHERE USE_YN = 'Y' ) A
          WHERE 1=1
            AND A.COMM_CLSF_CD = 'HLIF'
     </select>
@@ -54,7 +54,7 @@
               , A.RMRK
               , A.USE_YN
               , A.REG_ID
-          FROM ( SELECT * FROM kf99.TB_COMM_CD WHERE USE_YN = 'Y' ) A
+          FROM ( SELECT * FROM sys.TB_COMM_CD WHERE USE_YN = 'Y' ) A
          WHERE 1=1
            AND COMM_CLSF_CD = 'SHBP'
       ORDER BY COMM_CD
@@ -69,7 +69,7 @@
               , A.RMRK
               , A.USE_YN
               , A.REG_ID
-          FROM ( SELECT * FROM kf99.TB_COMM_CD WHERE USE_YN = 'Y' ) A
+          FROM ( SELECT * FROM sys.TB_COMM_CD WHERE USE_YN = 'Y' ) A
          WHERE 1=1
            AND A.COMM_CLSF_CD = 'SHBU'
       ORDER BY A.COMM_CD
@@ -78,7 +78,7 @@
     <!-- 장인 헤드 공통코드 -->
     <select id="craftsManMakeType" resultType="map">
         SELECT *
-          FROM kf99.TB_COMM_CD
+          FROM sys.TB_COMM_CD
          WHERE COMM_CLSF_CD = 'CMLC'
            AND USE_YN = 'Y' ORDER BY COMM_CD
     </select>
@@ -87,7 +87,7 @@
     <select id="villageListInfo" resultType="map">
          SELECT VILLAGE_ID
               , VILLAGE_NAME
-           FROM kf99.TB_VILLAGE
+           FROM sys.TB_VILLAGE
           WHERE VILLAGE_STAT_TYPE <![CDATA[<>]]> 'VSCD3'
             AND DEL_YN = 'N'
        ORDER BY cast(VILLAGE_ID as signed) ASC

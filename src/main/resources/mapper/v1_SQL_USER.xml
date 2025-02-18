@@ -2,20 +2,40 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTO Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.spring_jpa.data.GuriSQL_USER">
 
+	 <select id="getUserInfo" parameterType="string" resultType="com.example.spring_jpa.object.Member">
+        SELECT
+          	*
+        FROM
+            sys.TB_USER
+        WHERE
+            USER_ID = #{user_id}
+        	AND DEL_YN != 'Y'
+    </select>
+
+	<select id="getUserInfo2" parameterType="string" resultType="com.example.spring_jpa.object.Member">
+        SELECT
+          	*
+        FROM
+            sys.TB_USER
+        WHERE
+            USER_ID = #{user_id}
+        	AND DEL_YN != 'Y'
+    </select>
+
 	<select id="userMiddleCheck" resultType="map" parameterType="map">
 		SELECT *
-		  FROM kf99.TB_USER
+		  FROM sys.TB_USER
 		 WHERE USER_ID = #{userId}
 	</select>
 
 	<insert id="insertUserInfo" parameterType="map">
-		INSERT INTO kf99.TB_USER
+		INSERT INTO sys.TB_USER
 		VALUES(
 		       #{userId}
 			, #{encryptPwd}
 			, #{userName}
 			, null
-			,null
+			, null
 			, null
 			, null
 			, 'N'
@@ -23,8 +43,28 @@
 			, 'N'
 			, null
 			, null
+			, #{cityName}
 			, NOW()
-	, NOW()
+			, NOW()
 			  )
 	</insert>
+
+	<update id="updateUserInfo" parameterType="map">
+		UPDATE sys.TB_USER
+		   SET USER_NAME = #{userName}
+		     , CITY_YN   = #{cityYn}
+		     , CITY_USER_NAME = #{cityName}
+		     , UPD_DT = NOW()
+		WHERE
+			USER_ID = #{userId}
+	</update>
+
+	<update id="updatePassWordInfo" parameterType="map">
+		UPDATE sys.TB_USER
+		   SET
+		      USER_PWD = #{encryptPwd}
+		     ,  UPD_DT = NOW()
+		WHERE
+			USER_ID = #{userId}
+	</update>
 </mapper>

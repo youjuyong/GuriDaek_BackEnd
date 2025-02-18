@@ -52,7 +52,6 @@ public class TokenProvider {
                 .setExpiration(accessTokenExpiresIn)
                 .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
-
         return TokenDto.builder().grantType(BEARER_TYPE).accessToken(accessToken)
                 .tokenExpiresIn(accessTokenExpiresIn.getTime()).userId(authentication.getName()).build();
     }
