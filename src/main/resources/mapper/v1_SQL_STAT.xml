@@ -14,7 +14,7 @@
 			         	  A.VILLAGE_ID
 			         	  , A.VILLAGE_NAME
 			         	, IFNULL (SUM(B.KILL_YANG),0) KILL_YANG
-			        FROM ( SELECT * FROM sys.TB_VILLAGE WHERE DEL_YN = 'N' ) A LEFT OUTER JOIN ( SELECT * FROM sys.TT_YANG_WAR_INFO WHERE STR_TO_DATE(STAT_HH_STND,'%Y%m%d%H%i%s') BETWEEN  ADDDATE( CURDATE(), - WEEKDAY(CURDATE()) + 0 ) AND ADDDATE( CURDATE(), - WEEKDAY(CURDATE()) + 7 ) ) B
+			        FROM ( SELECT * FROM kf99.TB_VILLAGE WHERE DEL_YN = 'N' ) A LEFT OUTER JOIN ( SELECT * FROM kf99.TT_YANG_WAR_INFO WHERE STR_TO_DATE(STAT_HH_STND,'%Y%m%d%H%i%s') BETWEEN  ADDDATE( CURDATE(), - WEEKDAY(CURDATE()) + 0 ) AND ADDDATE( CURDATE(), - WEEKDAY(CURDATE()) + 7 ) ) B
 			        ON A.VILLAGE_ID = B.VILLAGE_ID
 			        WHERE 1=1
 			          AND A.VILLAGE_STAT_TYPE  <![CDATA[<>]]> 'VSCD3'
@@ -29,7 +29,7 @@
 	       		(  SELECT
 			         	  A.VILLAGE_ID
 			         	, IFNULL (SUM(B.KILL_YANG),0) KILL_YANG
-			        FROM ( SELECT * FROM sys.TB_VILLAGE WHERE DEL_YN = 'N' ) A LEFT OUTER JOIN ( SELECT * FROM sys.TT_YANG_WAR_INFO WHERE STR_TO_DATE(STAT_HH_STND,'%Y%m%d%H%i%s') BETWEEN  ADDDATE( CURDATE(), - WEEKDAY(CURDATE())  -7 ) AND ADDDATE( CURDATE(), - WEEKDAY(CURDATE()) + 6 -7) ) B
+			        FROM ( SELECT * FROM kf99.TB_VILLAGE WHERE DEL_YN = 'N' ) A LEFT OUTER JOIN ( SELECT * FROM kf99.TT_YANG_WAR_INFO WHERE STR_TO_DATE(STAT_HH_STND,'%Y%m%d%H%i%s') BETWEEN  ADDDATE( CURDATE(), - WEEKDAY(CURDATE())  -7 ) AND ADDDATE( CURDATE(), - WEEKDAY(CURDATE()) + 6 -7) ) B
 			        ON A.VILLAGE_ID = B.VILLAGE_ID
 			        WHERE 1=1
 			          AND A.VILLAGE_STAT_TYPE <![CDATA[<>]]> 'VSCD3'
@@ -60,13 +60,13 @@
 	 <!-- 마을 ID 조회 -->
     <select id="yangVillageList" resultType="integer" parameterType="string" >
         SELECT VILLAGE_ID
-        FROM sys.TB_VILLAGE
+        FROM kf99.TB_VILLAGE
         WHERE VILLAGE_NAME = #{name}
     </select>
 
 	 <!-- 양이 전공 마을 업로드 -->
     <insert id="insertYangKillsVillage" parameterType="map" >
-		INSERT INTO sys.TT_YANG_WAR_INFO (
+		INSERT INTO kf99.TT_YANG_WAR_INFO (
 		                    VILLAGE_ID
 						  , STAT_HH_STND
 						  , KILL_YANG
@@ -85,7 +85,7 @@
 
 	 <!-- 마을별 주민수 업로드 -->
     <insert id="insertVillageHumanUpload" parameterType="map" >
-		INSERT INTO sys.TT_VILLAGE_COUNT_INFO (
+		INSERT INTO kf99.TT_VILLAGE_COUNT_INFO (
 		                    VILLAGE_ID
 						  , STAT_DD_STND
 						  , HUMAN_CNT
@@ -112,7 +112,7 @@
 			         	  A.VILLAGE_ID
 			         	  , A.VILLAGE_NAME
 			         	  , B.HUMAN_CNT
-			        FROM ( SELECT * FROM sys.TB_VILLAGE WHERE DEL_YN = 'N' ) A LEFT OUTER JOIN ( SELECT * FROM sys.TT_VILLAGE_COUNT_INFO where STAT_DD_STND =  date_format(SUBDATE(NOW(), 1), '%Y%m%d')  ) B
+			        FROM ( SELECT * FROM kf99.TB_VILLAGE WHERE DEL_YN = 'N' ) A LEFT OUTER JOIN ( SELECT * FROM kf99.TT_VILLAGE_COUNT_INFO where STAT_DD_STND =  date_format(SUBDATE(NOW(), 1), '%Y%m%d')  ) B
 			        ON A.VILLAGE_ID = B.VILLAGE_ID
 			        WHERE 1=1
 			          AND A.VILLAGE_STAT_TYPE <![CDATA[<>]]> 'VSCD3'
@@ -128,7 +128,7 @@
 			         	  A.VILLAGE_ID
 			         	  , A.VILLAGE_NAME
 			         	  , B.HUMAN_CNT
-			        FROM ( SELECT * FROM sys.TB_VILLAGE WHERE DEL_YN = 'N' ) A LEFT OUTER JOIN ( SELECT * FROM sys.TT_VILLAGE_COUNT_INFO where STAT_DD_STND =  date_format(SUBDATE(NOW(), 2), '%Y%m%d')  ) B
+			        FROM ( SELECT * FROM kf99.TB_VILLAGE WHERE DEL_YN = 'N' ) A LEFT OUTER JOIN ( SELECT * FROM kf99.TT_VILLAGE_COUNT_INFO where STAT_DD_STND =  date_format(SUBDATE(NOW(), 2), '%Y%m%d')  ) B
 			        ON A.VILLAGE_ID = B.VILLAGE_ID
 			        WHERE 1=1
 			          AND A.VILLAGE_STAT_TYPE  <![CDATA[<>]]> 'VSCD3'
@@ -157,7 +157,7 @@
 
 	<!-- 장인 업로드 -->
     <insert id="insertCraftsManList" parameterType="map" >
-			INSERT INTO sys.TB_CRAFT_MAN_INFO(
+			INSERT INTO kf99.TB_CRAFT_MAN_INFO(
 							CRAFT_MAN_ID,
 							CRAFT_MAN_NAME,
 							CRAFT_TYPE,
