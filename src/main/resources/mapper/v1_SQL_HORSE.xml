@@ -7,7 +7,7 @@
      WITH SCORE AS(
         SELECT A.HORSE_ID
              , IFNULL(FORMAT(AVG(B.SCORE),1),0) SCORE
-          FROM sys.TB_HORSE A LEFT OUTER JOIN sys.TB_HORSE_SCORE B
+          FROM kf99.TB_HORSE A LEFT OUTER JOIN kf99.TB_HORSE_SCORE B
             ON A.HORSE_ID = B.HORSE_ID
       GROUP BY HORSE_ID
      )
@@ -16,11 +16,11 @@
              	 , A.HORSE_NUM
                  , A.HORSE_BURF_TYPE        AS HORSE_BURF_TYPE_CODE
              	 , A.HORSE_HOUSE_BURF_TYPE  AS HORSE_HOUSE_BURF_TYPE_CDOE
-             	 , (SELECT COMM_CD_KOR_NAME FROM sys.TB_COMM_CD WHERE COMM_CD = A.HORSER_LIMIT_CON 		   AND COMM_CLSF_CD = 'HUCO' ) AS  HORSER_LIMIT_CON
-             	 , (SELECT COMM_CD_KOR_NAME FROM sys.TB_COMM_CD WHERE COMM_CD = A.HORSE_BURF_TYPE		   AND COMM_CLSF_CD = 'ATKT' ) AS  HORSE_BURF_TYPE
-             	 , (SELECT COMM_CD_KOR_NAME FROM sys.TB_COMM_CD WHERE COMM_CD = A.HORSE_LIFE			   AND COMM_CLSF_CD = 'HLIF' ) AS  HORSE_LIFE
-             	 , (SELECT COMM_CD_KOR_NAME FROM sys.TB_COMM_CD WHERE COMM_CD = A.HORSE_HOUSE_BURF_TYPE    AND COMM_CLSF_CD = 'SHBP' ) AS  HORSE_HOUSE_BURF_TYPE
-        		 , (SELECT COMM_CD_KOR_NAME FROM sys.TB_COMM_CD WHERE COMM_CD = A.HORSE_BURF_PER_TYPE  	   AND COMM_CLSF_CD = 'SHBU' ) AS  HORSE_BURF_PER_TYPE
+             	 , (SELECT COMM_CD_KOR_NAME FROM kf99.TB_COMM_CD WHERE COMM_CD = A.HORSER_LIMIT_CON 		   AND COMM_CLSF_CD = 'HUCO' ) AS  HORSER_LIMIT_CON
+             	 , (SELECT COMM_CD_KOR_NAME FROM kf99.TB_COMM_CD WHERE COMM_CD = A.HORSE_BURF_TYPE		   AND COMM_CLSF_CD = 'ATKT' ) AS  HORSE_BURF_TYPE
+             	 , (SELECT COMM_CD_KOR_NAME FROM kf99.TB_COMM_CD WHERE COMM_CD = A.HORSE_LIFE			   AND COMM_CLSF_CD = 'HLIF' ) AS  HORSE_LIFE
+             	 , (SELECT COMM_CD_KOR_NAME FROM kf99.TB_COMM_CD WHERE COMM_CD = A.HORSE_HOUSE_BURF_TYPE    AND COMM_CLSF_CD = 'SHBP' ) AS  HORSE_HOUSE_BURF_TYPE
+        		 , (SELECT COMM_CD_KOR_NAME FROM kf99.TB_COMM_CD WHERE COMM_CD = A.HORSE_BURF_PER_TYPE  	   AND COMM_CLSF_CD = 'SHBU' ) AS  HORSE_BURF_PER_TYPE
          		 , IFNULL(B.MAX_SPED, 0)              MAX_SPED
          		 , IFNULL(B.MAX_AGIL, 0)              MAX_AGIL
          		 , IFNULL(B.MAX_FORCE, 0)             MAX_FORCE
@@ -28,7 +28,7 @@
                  , IFNULL(B.BIG_SHOP_PRICE,'정보없음')  BIG_SHOP_PRICE
                  , IFNULL(B.SPECIAL_BURF_NUM, 0)       SPECIAL_BURF_NUM
                  , C.SCORE
-          FROM kf99.TB_HORSE A LEFT OUTER JOIN sys.TB_HORSE_DETL B ON A.HORSE_ID = B.HORSE_ID LEFT OUTER JOIN SCORE C on A.HORSE_ID = C.HORSE_ID
+          FROM kf99.TB_HORSE A LEFT OUTER JOIN kf99.TB_HORSE_DETL B ON A.HORSE_ID = B.HORSE_ID LEFT OUTER JOIN SCORE C on A.HORSE_ID = C.HORSE_ID
          WHERE 1=1
            AND A.DEL_YN = 'N'
            <if test="rideLimitType != null and !rideLimitType.equalsIgnoreCase('')">
@@ -56,11 +56,11 @@
     <select id="getHorseReviewList" resultType="map" parameterType="map">
         SELECT HORSE_ID
             ,  USER_ID
-	        , ( select USER_NAME from sys.TB_USER where USER_ID = A.USER_ID ) USER_NAME
+	        , ( select USER_NAME from kf99.TB_USER where USER_ID = A.USER_ID ) USER_NAME
 	        , SCORE
 	        , COMMENT
 	        , date_format(REG_DT, '%Y-%m-%d %H:%I:%S') REG_DT
-         FROM sys.TB_HORSE_SCORE A
+         FROM kf99.TB_HORSE_SCORE A
         WHERE 1=1
           AND HORSE_ID = #{objectId}
         ORDER  BY REG_DT DESC
@@ -68,7 +68,7 @@
 
     <insert id="putHorseRevieInfo" parameterType="map">
         INSERT INTO
-          sys.TB_HORSE_SCORE
+          kf99.TB_HORSE_SCORE
         VALUES(
                #{objectId}
              , #{userId}
@@ -80,7 +80,7 @@
     </insert>
 
     <delete id="deleteHorseRevieInfo" parameterType="map">
-        DELETE FROM sys.TB_HORSE_SCORE
+        DELETE FROM kf99.TB_HORSE_SCORE
               WHERE HORSE_ID =  #{objectId}
                 AND USER_ID  = #{userId}
     </delete>
