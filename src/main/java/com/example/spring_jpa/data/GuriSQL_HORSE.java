@@ -9,7 +9,10 @@ import java.util.Map;
 public interface GuriSQL_HORSE {
     // 탈것 리스트
     public List<Map<String, Object>> horseList (Map map);
+    // 탈것 리뷰 리스트
+    List<Map<String, Object>> getHorseReviewList (Map map);
 
-
+    int putHorseRevieInfo (Map map);
+    int deleteHorseRevieInfo (Map map);
 }
 
