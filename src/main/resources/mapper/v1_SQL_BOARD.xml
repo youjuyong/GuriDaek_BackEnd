@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTO Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.spring_jpa.data.GuriSQL_BOARD">
+
+	<select id="getEvnetBoardList" resultType="map">
+		SELECT A.TEXT_ID
+	  		 , A.RTRV_CNT
+	  		 , A.TEXT_TITL
+		     , A.BORD_TYPE
+		     , A.IMPT_YN
+		     , A.EVENT_TERM
+	  		 , (SELECT USER_NAME FROM kf99.TB_USER WHERE USER_ID  = A.WRTR) USER_NAME
+	  		 , date_format( A.REG_DT, '%Y-%m-%d') REG_DT
+  		 FROM kf99.TB_EVENT_BORD A
+  		WHERE USE_YN = 'Y'
+  	 ORDER BY IMPT_YN DESC, TEXT_ID
+	</select>
+
+	<select id="getEventBoardDateTime" parameterType="map" resultType="map">
+		SELECT *
+		 FROM kf99.TB_EVENT_DATE
+		WHERE EVENT_TERM = #{event_term}
+		AND TEXT_ID = #{text_id}
+	</select>
+
+	<insert id="putEventDayTime" parameterType="map" >
+		insert into kf99.TT_EVENT_DATE
+			VALUES (
+				#{text_id}
+				, #{user_id}
+				, #{date1}
+				, #{date2}
+				, #{date3}
+				, #{date4}
+				, #{time1}
+				, #{time2}
+				, #{time3}
+				, #{time4}
+				, #{time5}
+				, #{time6}
+				, #{time7}
+				, now()
+				, now()
+			)
+	</insert>
+
+	<select id="getEventBoardUserCheck" parameterType="map" resultType="map">
+		SELECT * FROM kf99.TT_EVENT_DATE WHERE USER_ID = #{user_id} AND TEXT_ID = #{text_id}
+	</select>
+
+	<select id="getEventBoardDateTimeChart" resultType="map" parameterType="map">
+		SELECT  SUM(DATE1) as DATE1
+			  , SUM(DATE2) as DATE2
+			  , SUM(DATE3) as DATE3
+			  , SUM(DATE4) as DATE4
+			  , SUM(TIME1) as TIME1
+			  , SUM(TIME2) as TIME2
+			  , SUM(TIME3) as TIME3
+			  , SUM(TIME4) as TIME4
+			  , SUM(TIME5) as TIME5
+			  , SUM(TIME6) as TIME6
+			  , SUM(TIME7) as TIME7
+ 		FROM kf99.TT_EVENT_DATE
+ 		WHERE TEXT_ID = #{text_id} GROUP BY TEXT_ID
+	</select>
+
+	 <select id="getEventBoardReviewList" resultType="map" parameterType="map">
+        SELECT TEXT_ID
+	        , ( SELECT USER_NAME FROM kf99.TB_USER WHERE USER_ID = A.USER_ID ) USER_NAME
+	        , COMMENT
+	        , date_format(REG_DT, '%Y-%m-%d %H:%I:%S') REG_DT
+         FROM kf99.TB_EVENT_BOARD_REVIEW A
+        WHERE 1=1
+           AND TEXT_ID = #{text_id}
+        ORDER BY REG_DT DESC
+    </select>
+
+    <insert id="putEventBoardReviewInfo" parameterType="map">
+        INSERT INTO
+          kf99.TB_EVENT_BOARD_REVIEW
+        VALUES(
+             #{text_id}
+             , #{user_id}
+             , #{content}
+             , NOW()
+             , NOW()
+              )
+    </insert>
+
+    <delete id="deleteEventBoardRevieInfo" parameterType="map">
+        DELETE FROM kf99.TB_EVENT_BOARD_REVIEW
+              WHERE TEXT_ID =  #{text_id}
+                AND USER_ID  = #{user_id}
+    </delete>
+
+</mapper>

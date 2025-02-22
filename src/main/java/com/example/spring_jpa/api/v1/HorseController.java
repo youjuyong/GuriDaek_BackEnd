@@ -150,7 +150,7 @@ public class HorseController implements BackendApi {
     }
 
      @Operation(method = "DELETE",
-            summary = "탈것 리뷰 입력",
+            summary = "탈것 리뷰 삭제",
             responses = {
                     @ApiResponse(responseCode = "200", description = "성공, 페이로드에 array[json] 데이터 반환", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiResponses.class)))),
                     @ApiResponse(responseCode = "500", description = "실패, 에러 메시지 참조", content = @Content(schema = @Schema(implementation = ApiErrorMessage.class)))
