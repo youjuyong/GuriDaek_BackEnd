@@ -235,7 +235,7 @@ public class BoardController implements BackendApi {
     @PostMapping(value = "viewCount",
             produces = {"application/json"}
     )
-      @CrossOrigin("*")
+      @Transactional
     public ResponseEntity<?> viewCount(@RequestParam  Map<String, Object> map,   HttpServletRequest request,
                            HttpServletResponse response ) {
         List<Map<String, Object>> resultList = Arrays.asList();
@@ -247,7 +247,6 @@ public class BoardController implements BackendApi {
         try {
 
                EventBoard evt = evntRepo.findById(textId);
-
                for ( int i =0 ; cookies != null && i < cookies.length; i ++ ) {
 
                    if ( cookies[i].getName().equals("postView") ){

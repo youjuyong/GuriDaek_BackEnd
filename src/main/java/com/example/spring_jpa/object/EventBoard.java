@@ -18,8 +18,8 @@ import java.time.LocalDateTime;
 @Setter
 @Builder
 @NoArgsConstructor
-@Entity(name = "tb_event_bord")
-@Table(name = "tb_event_bord")
+@Entity(name = "\"TB_EVENT_BORD\"")
+@Table(name = "\"TB_EVENT_BORD\"")
 public class EventBoard implements Serializable {
 
     @Id
