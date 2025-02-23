@@ -235,7 +235,7 @@ public class BoardController implements BackendApi {
     @PostMapping(value = "viewCount",
             produces = {"application/json"}
     )
-    @Transactional
+      @CrossOrigin("*")
     public ResponseEntity<?> viewCount(@RequestParam  Map<String, Object> map,   HttpServletRequest request,
                            HttpServletResponse response ) {
         List<Map<String, Object>> resultList = Arrays.asList();
@@ -280,19 +280,19 @@ public class BoardController implements BackendApi {
             cookie.setHttpOnly(true);
             response.addCookie(cookie);
 
-            response.addHeader("Set-Cookie","name=value; path=/; SameSite=Lax" );
-
-            ResponseCookie strictCookie = ResponseCookie.from("strict","strict").path("/").sameSite("strict").domain(".guridaek.com")
-                    .build();
-            response.addHeader("Set-Cookie", strictCookie.toString());
-
-            ResponseCookie laxCookie = ResponseCookie.from("Lax","Lax").path("/").sameSite("Lax").domain(".guridaek.com")
-                    .build();
-            response.addHeader("Set-Cookie", laxCookie.toString());
-
-            ResponseCookie noneCookie = ResponseCookie.from("none","none").path("/").sameSite("none").domain(".guridaek.com")
-                    .build();
-            response.addHeader("Set-Cookie", noneCookie.toString());
+//            response.addHeader("Set-Cookie","name=value; path=/; SameSite=Lax" );
+//
+//            ResponseCookie strictCookie = ResponseCookie.from("strict","strict").path("/").sameSite("strict").domain(".guridaek.com")
+//                    .build();
+//            response.addHeader("Set-Cookie", strictCookie.toString());
+//
+//            ResponseCookie laxCookie = ResponseCookie.from("Lax","Lax").path("/").sameSite("Lax").domain(".guridaek.com")
+//                    .build();
+//            response.addHeader("Set-Cookie", laxCookie.toString());
+//
+//            ResponseCookie noneCookie = ResponseCookie.from("none","none").path("/").sameSite("none").domain(".guridaek.com")
+//                    .build();
+//            response.addHeader("Set-Cookie", noneCookie.toString());
         } catch ( RuntimeException ex ) {
                   return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body(BackendApi.getErrorMessage(
