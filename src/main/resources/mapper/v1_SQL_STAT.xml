@@ -124,8 +124,8 @@
                    , A.YES_RANK
                    , B.BYES_RANK
                    , CASE
-                         WHEN (cast(A.YES_HUMAN_CNT AS signed) - cast(B.BYES_HUMAN_CNT AS signed)) <![CDATA[<]]> 0 THEN 'UP'
-                         WHEN (cast(A.YES_HUMAN_CNT AS signed) - cast(B.BYES_HUMAN_CNT AS signed)) <![CDATA[>]]> 0 THEN 'DOWN'
+                         WHEN (cast(A.YES_RANK AS signed) - cast(B.BYES_RANK AS signed)) <![CDATA[<]]> 0 THEN 'UP'
+                         WHEN (cast(A.YES_RANK AS signed) - cast(B.BYES_RANK AS signed)) <![CDATA[>]]> 0 THEN 'DOWN'
                          ELSE 'NORMAL'
                 END                                                                          DIFF_TYPE
                    , ABS(cast(A.YES_HUMAN_CNT AS signed) - cast(B.BYES_HUMAN_CNT AS signed)) DIFF_NUM
