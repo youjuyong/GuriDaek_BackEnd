@@ -67,4 +67,21 @@
 		WHERE
 			USER_ID = #{userId}
 	</update>
+
+	<insert id="insertUserLoginHistory" parameterType="map">
+		INSERT INTO
+			kf99.TH_USER_CONN
+			(
+			 REG_DT
+			 ,USER_ID
+			 ,USE_TYPE
+			)
+			VALUES
+			(
+			 now()
+			 ,#{user_id}
+			 ,0
+			)
+	</insert>
+
 </mapper>

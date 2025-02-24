@@ -27,6 +27,11 @@ public class JwtFilter extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 
+        response.setHeader("Access-Control-Allow-Origin", "*");
+	    response.setHeader("Access-Control-Allow-Method","POST,GET,OPTIONS,DELETE, PUT");
+	    response.setHeader("Access-Control-Max-Age","3600");
+	    response.setHeader("Access-Control-Allow-Headers","Content-Type,x-requested-with,Authorization,Axxess-Control-Allow-Origin");
+
         filterChain.doFilter(request, response);
     }
 

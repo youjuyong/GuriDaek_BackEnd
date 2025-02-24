@@ -2,6 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTO Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.spring_jpa.data.GuriSQL_BOARD">
 
+	<!-- 이벤트 공지 리스트 -->
 	<select id="getEvnetBoardList" resultType="map">
 		SELECT A.TEXT_ID
 	  		 , A.RTRV_CNT
@@ -11,9 +12,14 @@
 		     , A.EVENT_TERM
 	  		 , (SELECT USER_NAME FROM kf99.TB_USER WHERE USER_ID  = A.WRTR) USER_NAME
 	  		 , date_format( A.REG_DT, '%Y-%m-%d') REG_DT
-  		 FROM kf99.TB_EVENT_BORD A
-  		WHERE USE_YN = 'Y'
-  	 ORDER BY IMPT_YN DESC, TEXT_ID
+			 , CASE WHEN B.FILE_NUM > 0 THEN 'Y'
+	  		     	ELSE 'N'
+	  		     	END FILE_YN
+			 , B.FILE_NUM
+		     , B.FILE_NAME
+  		 FROM kf99.TB_EVENT_BORD A LEFT OUTER JOIN kf99.TB_EVENT_FILE_MGMT B ON A.TEXT_ID = B.TEXT_ID
+  		WHERE A.USE_YN = 'Y'
+  	 ORDER BY A.IMPT_YN DESC, A.TEXT_ID
 	</select>
 
 	<select id="getEventBoardDateTime" parameterType="map" resultType="map">
@@ -93,4 +99,15 @@
                 AND USER_ID  = #{user_id}
     </delete>
 
+	<!-- 파일 다운로드시 파일정보 얻어오기 -->
+	<select id="fileDownload" resultType="hashmap" parameterType="hashmap">
+		SELECT
+			FILE_NAME
+			,FILE_DATA
+		FROM
+			kf99.TB_EVENT_FILE_MGMT
+		WHERE
+			TEXT_ID = #{textId}
+			AND FILE_NUM = #{fileNumber}
+	</select>
 </mapper>

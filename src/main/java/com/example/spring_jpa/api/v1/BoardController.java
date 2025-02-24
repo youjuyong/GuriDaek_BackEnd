@@ -35,6 +35,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.CookieGenerator;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.sql.Blob;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -331,7 +338,7 @@ public class BoardController implements BackendApi {
         return ResponseEntity.ok(result);
     }
 
-      @Operation(method = "DELETE",
+    @Operation(method = "DELETE",
             summary = "이벤트 공지 리뷰 삭제",
             responses = {
                     @ApiResponse(responseCode = "200", description = "성공, 페이로드에 array[json] 데이터 반환", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiResponses.class)))),
@@ -357,4 +364,98 @@ public class BoardController implements BackendApi {
         }
         return ResponseEntity.ok(result);
     }
+
+    @Operation(method = "POST",
+            summary = "이벤트 공지 리뷰 삭제",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "성공, 페이로드에 array[json] 데이터 반환", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiResponses.class)))),
+                    @ApiResponse(responseCode = "500", description = "실패, 에러 메시지 참조", content = @Content(schema = @Schema(implementation = ApiErrorMessage.class)))
+            }
+    )
+    @PostMapping(value = "event-board-file-download",
+            produces = {"application/json"}
+    )
+    @CrossOrigin("*")
+    public void eventBoardFileDownload(HttpServletRequest request, HttpServletResponse response,@RequestParam Map<String, Object> map) {
+        Map<String, Object> fileMap = null;
+        BufferedInputStream ips = null;
+        OutputStream ops = null;
+        response.reset();
+    System.out.println(map);
+        try {
+            fileMap = boardSQL.fileDownload(map);
+                System.out.println(fileMap);
+            String filenm = fileMap.get("FILE_NAME").toString();
+            String encordedFilename = URLEncoder.encode(filenm, "UTF-8").replace("+", "%20");
+              System.out.println(encordedFilename);
+            response.setContentType(getMimeType(filenm));
+            response.setHeader("Content-Disposition", "attachment; filename=\'" + filenm + "\';");
+            response.setHeader("Content-Disposition", "attachment;filename=" + encordedFilename + ";filenm*= UTF-8''" + encordedFilename);
+            response.setHeader("Content-Transfer-Encoding", "binary");
+            response.setHeader("Pragma", "no-cache;");
+            response.setHeader("Expires", "-1;");
+            if ( ops == null ) return;
+            ops = response.getOutputStream();
+            Blob blob = (Blob) fileMap.get("FILE_DATA");
+            response.setContentLength((int) blob.length());
+
+            ips = new BufferedInputStream(blob.getBinaryStream());
+            byte[] buffer = new byte[2048];
+            int r = 0;
+            while ((r = ips.read(buffer)) != -1) {
+                ops.write(buffer, 0, r);
+            }
+        } catch ( RuntimeException ex ) {
+           throw new RuntimeException(ex);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            if(ips != null){
+				try {
+					ips.close();
+				} catch (IOException e) {
+				}
+			}
+			try {
+                if ( ops == null ) return;
+				else ops.flush();
+			} catch (IOException e) {
+			}
+        }
+
+        fileMap=null;
+    }
+
+    private String getMimeType(String name) {
+		String ret = "application/octet-stream";
+		if (name.contains(".jpg") || name.contains(".jpeg")) {
+			ret = "image/jpg";
+		} else if (name.contains(".xls")) {
+			ret = "application/vnd.ms-excel";
+		} else if (name.contains(".ppt")) {
+			ret = "application/vnd.ms-powerpoint";
+		} else if (name.contains(".gif")) {
+			ret = "image/gif";
+		} else if (name.contains(".pdf")) {
+			ret = "application/pdf";
+		} else if (name.contains(".txt")) {
+			ret = "text/plain";
+		} else if (name.contains(".hwp")) {
+			ret = "application/x-hwp";
+		} else if (name.contains(".png")) {
+			ret = "image/png";
+		} else if (name.contains(".xlsx")) {
+			ret = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+		} else if (name.contains(".docx")) {
+			ret = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+		} else if (name.contains(".pptx")) {
+			ret = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+		}
+		return ret;
+	}
+
 }

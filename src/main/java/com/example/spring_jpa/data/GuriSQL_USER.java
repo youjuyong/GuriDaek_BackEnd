@@ -15,5 +15,7 @@ public interface GuriSQL_USER {
     int insertUserInfo (Map map);
     int updateUserInfo (Map map);
     int updatePassWordInfo (Map map);
+
+    int insertUserLoginHistory (String user_id);
 }
 

@@ -65,6 +65,10 @@ public class UserController implements BackendApi {
             TokenDto tokenDto = tokenProvider.generateTokenDto(authentication);
             Member memberInfo = userSQL.getUserInfo2(member.getUserId());
             tokenDto.setMember(memberInfo);
+
+            String userId = member.getUserId();
+            userSQL.insertUserLoginHistory(userId);
+
             return ResponseEntity.ok(tokenDto);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
