@@ -12,6 +12,7 @@ import com.example.spring_jpa.jwt.TokenDto;
 import com.example.spring_jpa.jwt.TokenProvider;
 import com.example.spring_jpa.object.EventBoard;
 import com.example.spring_jpa.object.Member;
+import com.google.common.collect.Maps;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -24,6 +25,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -206,7 +209,7 @@ public class BoardController implements BackendApi {
     }
 
      @Operation(method = "GET",
-            summary = "탈것 리뷰 리스트",
+            summary = "이벤트 시간 공지 리뷰 리스트",
             responses = {
                     @ApiResponse(responseCode = "200", description = "성공, 페이로드에 array[json] 데이터 반환", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiResponses.class)))),
                     @ApiResponse(responseCode = "500", description = "실패, 에러 메시지 참조", content = @Content(schema = @Schema(implementation = ApiErrorMessage.class)))
@@ -457,5 +460,56 @@ public class BoardController implements BackendApi {
 		}
 		return ret;
 	}
+
+    @Operation(method = "GET",
+            summary = "공지 컨텐트 미지ㅣ 리스트",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "성공, 페이로드에 array[json] 데이터 반환", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiResponses.class)))),
+                    @ApiResponse(responseCode = "500", description = "실패, 에러 메시지 참조", content = @Content(schema = @Schema(implementation = ApiErrorMessage.class)))
+            }
+    )
+    @GetMapping(value = "event-board-content-list",
+            produces = {"application/json"}
+    )
+    public ResponseEntity<?> getEventBoardContentList(@RequestParam Map<String, Object> map) {
+        List<Map<String, Object>> contentList = Arrays.asList();
+        List<Map<String, Object>> imgList = Arrays.asList();
+
+        Map<String, List<Map<String, Object>>> resultMap = Maps.newHashMap();
+
+        try {
+            contentList = boardSQL.getEventBoardContentList(map);
+            imgList     = boardSQL.getEventBoardContentImgList(map);
+
+            if ( imgList.size() != 0 ) {
+                for ( int i = 0; i < imgList.size(); i++ ) {
+
+                    if( imgList.get(i).get("CONT_IMAG_DATA") == null) {
+				        continue;
+			        }
+
+                    byte[] encoded = org.apache.commons.codec.binary.Base64.encodeBase64((byte[]) imgList.get(i).get("CONT_IMAG_DATA"));
+                    String encoedeString = new String(encoded);
+                    String extension = FilenameUtils.getExtension(String.valueOf(imgList.get(i).get("CONT_IMAG_NAME")));
+                    imgList.get(i).put("extension", extension);
+                    imgList.get(i).remove("CONT_IMAG_DATA");
+                    imgList.get(i).put("encodeStr", encoedeString);
+
+                }
+            }
+            resultMap.put("contentList", contentList);
+            resultMap.put("imgList",         imgList);
+        } catch ( RuntimeException ex ) {
+          return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(BackendApi.getErrorMessage(
+							HttpStatus.INTERNAL_SERVER_ERROR.value(),
+							Message.TRANSACTION_FAILURE,
+							ErrorCode.INVALID_PARAMETER,
+							ex.getMessage()
+					));
+        }
+
+        return ResponseEntity.ok(resultMap);
+    }
 
 }

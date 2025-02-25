@@ -20,6 +20,9 @@ public interface GuriSQL_BOARD {
     List<Map<String, Object>>  getEventBoardUserCheck(Map map);
     List<Map<String, Object>> getEventBoardDateTimeChart (Map map);
     List<Map<String, Object>> getEventBoardReviewList (Map map);
+    List<Map<String, Object>> getEventBoardContentList (Map map);
+
+    List<Map<String, Object>> getEventBoardContentImgList (Map map);
     Map<String, Object> fileDownload (Map map);
 
 }

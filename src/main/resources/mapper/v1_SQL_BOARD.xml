@@ -22,6 +22,24 @@
   	 ORDER BY A.IMPT_YN DESC, A.TEXT_ID
 	</select>
 
+	<!-- 이벤트 공지 본문 리스트 -->
+	<select id="getEventBoardContentList" resultType="map" parameterType="map" >
+		 SELECT   A.TEXT_ID
+  			    , A.TEXT_TITL
+  		        , IFNULL(C.TEXT_CONT, '정보없음') TEXT_CONT
+  		   FROM TB_EVENT_BORD A LEFT OUTER JOIN TB_EVENT_TEXT_CONT C ON A.TEXT_ID = C.TEXT_ID
+   		  WHERE A.TEXT_ID  = #{text_id}
+	</select>
+
+	<!-- 이벤트 공지 본문 이미지 리스트 -->
+	<select id="getEventBoardContentImgList" resultType="map" parameterType="map" >
+		  SELECT
+  			     A.CONT_IMAG_DATA
+		  	   , A.CONT_IMAG_NAME
+  			FROM TB_EVENT_BORD_IMAG A
+  		   WHERE A.TEXT_ID  = #{text_id}
+	</select>
+
 	<select id="getEventBoardDateTime" parameterType="map" resultType="map">
 		SELECT *
 		 FROM kf99.TB_EVENT_DATE
