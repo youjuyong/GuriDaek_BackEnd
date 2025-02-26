@@ -1,5 +1,7 @@
 package com.example.spring_jpa.api;
 
+import io.swagger.v3.oas.models.responses.ApiResponse;
+
 public interface BackendApi {
 	
 	static ApiErrorMessage getErrorMessage(int status, String message, String errorCode, String suggestion) {
@@ -17,7 +19,7 @@ public interface BackendApi {
 		apiSuccessMessage.setMessage(message);
 		return apiSuccessMessage;
 	}
-	
+
 	void assertConnection();
 	
 	void loadData();

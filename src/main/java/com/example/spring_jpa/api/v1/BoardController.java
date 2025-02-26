@@ -1,9 +1,7 @@
 package com.example.spring_jpa.api.v1;
 
-import com.example.spring_jpa.api.ApiErrorMessage;
-import com.example.spring_jpa.api.BackendApi;
-import com.example.spring_jpa.api.ErrorCode;
-import com.example.spring_jpa.api.Message;
+import com.example.spring_jpa.api.*;
+import com.example.spring_jpa.api.v1.repository.EventBoardPrizeRepo;
 import com.example.spring_jpa.api.v1.repository.EventBoardRepo;
 import com.example.spring_jpa.data.GuriSQL_BOARD;
 import com.example.spring_jpa.data.GuriSQL_USER;
@@ -11,6 +9,7 @@ import com.example.spring_jpa.jwt.MemberRequestDto;
 import com.example.spring_jpa.jwt.TokenDto;
 import com.example.spring_jpa.jwt.TokenProvider;
 import com.example.spring_jpa.object.EventBoard;
+import com.example.spring_jpa.object.EventBoardPrize;
 import com.example.spring_jpa.object.Member;
 import com.google.common.collect.Maps;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,6 +26,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -60,9 +61,10 @@ import java.util.Map;
 @RequestMapping("/api/board")
 public class BoardController implements BackendApi {
 
-    private final GuriSQL_BOARD boardSQL;
-    private final EventBoardRepo evntRepo;
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(BoardController.class);
+    private final GuriSQL_BOARD       boardSQL;
+    private final EventBoardRepo      evntRepo;
+    private final EventBoardPrizeRepo eventPrizeRepo;
     @Override
     @PostConstruct
     public void assertConnection() {
@@ -510,6 +512,97 @@ public class BoardController implements BackendApi {
         }
 
         return ResponseEntity.ok(resultMap);
+    }
+
+    @Operation(method = "GET",
+            summary = "공지 컨텐트 미지ㅣ 리스트",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "성공, 페이로드에 array[json] 데이터 반환", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiResponses.class)))),
+                    @ApiResponse(responseCode = "500", description = "실패, 에러 메시지 참조", content = @Content(schema = @Schema(implementation = ApiErrorMessage.class)))
+            }
+    )
+    @GetMapping(value = "event-board-prize-list",
+            produces = {"application/json"}
+    )
+    public ResponseEntity<?> getEventBoardPrizeList(@RequestParam Map<String, Object> map) {
+
+        List<Map<String, Object>> resultList = Arrays.asList();
+        try {
+            resultList = boardSQL.getPrizeUserList(map);
+        } catch ( RuntimeException ex ) {
+          LOGGER.info("getEventBoardPrizeList are " + ex.toString());
+          return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(BackendApi.getErrorMessage(
+							HttpStatus.INTERNAL_SERVER_ERROR.value(),
+							Message.TRANSACTION_FAILURE,
+							ErrorCode.INVALID_PARAMETER,
+							ex.getMessage()
+					));
+        }
+
+        return ResponseEntity.ok(resultList);
+    }
+
+     @Operation(method = "POST",
+            summary = "이벤트 경품 추첨",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "성공, 페이로드에 array[json] 데이터 반환", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiResponses.class)))),
+                    @ApiResponse(responseCode = "500", description = "실패, 에러 메시지 참조", content = @Content(schema = @Schema(implementation = ApiErrorMessage.class)))
+            }
+    )
+    @PostMapping(value = "event-board-prize-sumit",
+            produces = {"application/json"}
+    )
+     @Transactional
+    public ResponseEntity<?> postEventPrizeSumit(@RequestParam Map<String, Object> map) {
+        List<EventBoardPrize> evtBoardP = null;
+        List<EventBoardPrize> evtBoardNotUser = null;
+
+        List<Map<String, Object>> resultList = Arrays.asList();
+        String textId = String.valueOf(map.get("text_id"));
+        String userId = String.valueOf(map.get("user_id"));
+
+        String SuccessCode =  "";
+
+        try {
+                 evtBoardP       = eventPrizeRepo.findByIdAndUserId(textId, userId);
+                 evtBoardNotUser = eventPrizeRepo.findByUserIdIsNullAndId(textId);
+
+                 // 경품 신청을 안했을시
+                 if ( evtBoardP.size() == 0 ) {
+
+                     // 경품 목록이 다 나갔을 경우
+                     if ( evtBoardNotUser.size() == 0) {
+                          SuccessCode = Message.EVENT_PRIZE_USER_LIMIT;
+                     } else {
+                          int index = (int) (Math.random() * evtBoardNotUser.size());
+                        EventBoardPrize evt = evtBoardNotUser.get(index);
+                        evt.setUserId(userId);
+                        evt.setUserId(evt.getUserId());
+
+                        SuccessCode = Message.EVENT_PRIZE_SUMIT_SUCCESS;
+                     }
+                 // 경품 신청을 이미 했을시
+                 } else {
+                     SuccessCode = Message.EVENT_PRIZE_USER_YN;
+                 }
+        } catch ( RuntimeException ex ) {
+            LOGGER.info("getEventBoardPrizeList are " + ex.toString());
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(BackendApi.getErrorMessage(
+							HttpStatus.INTERNAL_SERVER_ERROR.value(),
+							Message.TRANSACTION_FAILURE,
+							ErrorCode.INVALID_PARAMETER,
+							null
+					));
+        }
+
+
+        return ResponseEntity.status(HttpStatus.OK)
+                            .body(BackendApi.getSuccessMessage(
+                                    HttpStatus.OK.value(),
+                                    SuccessCode
+                            ));
     }
 
 }

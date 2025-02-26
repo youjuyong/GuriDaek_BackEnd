@@ -17,6 +17,8 @@
 	  		     	END FILE_YN
 			 , B.FILE_NUM
 		     , B.FILE_NAME
+			 , IFNULL(A.PRIZE_YN, 'N') PRIZE_YN
+			 , IFNULL(A.PRIZE_BORD_YN, 'N') PRIZE_BORD_YN
   		 FROM kf99.TB_EVENT_BORD A LEFT OUTER JOIN kf99.TB_EVENT_FILE_MGMT B ON A.TEXT_ID = B.TEXT_ID
   		WHERE A.USE_YN = 'Y'
   	 ORDER BY A.IMPT_YN DESC, A.TEXT_ID
@@ -45,6 +47,17 @@
 		 FROM kf99.TB_EVENT_DATE
 		WHERE EVENT_TERM = #{event_term}
 		AND TEXT_ID = #{text_id}
+	</select>
+
+	<select id="getPrizeUserList" parameterType="map" resultType="map">
+		SELECT A.PRIZE_NUM
+		     , A.TEXT_ID
+		     , A.EVENT_TERM
+		     , A.PRIZE_NAME
+		     , (SELECT USER_NAME FROM TB_USER WHERE USER_ID = A.USER_ID) USER_NAME
+			 , A.USER_ID
+   		  FROM TT_EVENT_PRIZE A
+ 	 WHERE A.TEXT_ID  = #{text_id}
 	</select>
 
 	<insert id="putEventDayTime" parameterType="map" >

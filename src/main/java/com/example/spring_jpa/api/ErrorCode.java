@@ -20,4 +20,5 @@ public class ErrorCode {
 	public static final String EXCEL_HOUR_LENGTH_ERROR = "F006";
 	public static final String EXCEL_MINUTE_LENGTH_ERROR = "F007";
 
+
 }
