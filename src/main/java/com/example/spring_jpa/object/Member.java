@@ -45,10 +45,6 @@ public class Member implements Serializable {
     @Column(name = "user_addr")
     private String userAddr;
 
-    @Schema(description = "모바일")
-    @Column(name = "user_mobile")
-    private String userMobile;
-
     @Schema(description = "이메일")
     @Column(name = "user_emal")
     private String userEmal;
@@ -93,13 +89,12 @@ public class Member implements Serializable {
     private Authority authority = Authority.ROLE_ADMIN;
 
     @Builder
-    public Member(String userId, String userPwd, String userName, String userTel, String userAddr, String userMobile, String userEmal, String deleted, String cityYn, String masterYn, String hintQuestion, String hintAnswer, String cityUserName, LocalDateTime updatedDate, LocalDateTime registeredDate, Authority authority) {
+    public Member(String userId, String userPwd, String userName, String userTel, String userAddr, String userEmal, String deleted, String cityYn, String masterYn, String hintQuestion, String hintAnswer, String cityUserName, LocalDateTime updatedDate, LocalDateTime registeredDate, Authority authority) {
         this.userId = userId;
         this.userPwd = userPwd;
         this.userName = userName;
         this.userTel = userTel;
         this.userAddr = userAddr;
-        this.userMobile = userMobile;
         this.userEmal = userEmal;
         this.deleted = deleted;
         this.cityYn = cityYn;
@@ -120,7 +115,6 @@ public class Member implements Serializable {
                 ", userName='" + userName + '\'' +
                 ", userTel='" + userTel + '\'' +
                 ", userAddr='" + userAddr + '\'' +
-                ", userMobile='" + userMobile + '\'' +
                 ", userEmal='" + userEmal + '\'' +
                 ", deleted='" + deleted + '\'' +
                 ", cityYn='" + cityYn + '\'' +
