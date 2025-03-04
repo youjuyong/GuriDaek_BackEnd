@@ -124,8 +124,8 @@
                    , A.YES_RANK
                    , B.BYES_RANK
                    , CASE
-                         WHEN (cast(A.YES_RANK AS signed) - cast(B.BYES_RANK AS signed)) <![CDATA[<]]> 0 THEN 'UP'
-                         WHEN (cast(A.YES_RANK AS signed) - cast(B.BYES_RANK AS signed)) <![CDATA[>]]> 0 THEN 'DOWN'
+                         WHEN (cast(A.YES_HUMAN_CNT AS signed) - cast(B.BYES_HUMAN_CNT AS signed)) <![CDATA[>]]> 0 THEN 'UP'
+                         WHEN (cast(A.YES_HUMAN_CNT AS signed) - cast(B.BYES_HUMAN_CNT AS signed)) <![CDATA[<]]> 0 THEN 'DOWN'
                          ELSE 'NORMAL'
                 END                                                                          DIFF_TYPE
                    , ABS(cast(A.YES_HUMAN_CNT AS signed) - cast(B.BYES_HUMAN_CNT AS signed)) DIFF_NUM
@@ -192,8 +192,8 @@
               FROM cte
          )
        SELECT AA.*
-            , IFNULL(BB.HUMAN_CNT,0) AS CURRENT_CNT
-            , IFNULL(CC.HUMAN_CNT,0) AS PRE_CNT
+            , IFNULL(BB.HUMAN_CNT,'-') AS CURRENT_CNT
+            , IFNULL(CC.HUMAN_CNT,'-') AS PRE_CNT
             , BB.DT AS DT_BB
             , CC.DT AS DT_CC
             , ( SELECT VILLAGE_NAME FROM TB_VILLAGE WHERE VILLAGE_ID = #{villageId} ) VILLAGE_NAME
@@ -281,6 +281,131 @@
                      FROM BASE2 A LEFT OUTER JOIN ( SELECT  SUBSTRING(STAT_DD_STND,1,8) STAT_DD_STND, HUMAN_CNT,VILLAGE_ID  FROM TT_VILLAGE_COUNT_INFO b WHERE VILLAGE_ID =#{villageId}) B ON A.DT = B.STAT_DD_STND
             ) BB ON   AA.DATE = SUBSTRING(BB.DT,7,8)
             WHERE BB.HUMAN_CNT <![CDATA[<>]]>0
+            GROUP BY BB.VILLAGE_ID
+     ) ABF ON ABCD.VILLAGE_ID = ABF.VILLAGE_ID
+    </select>
+
+    <select id="staticsYangCnt" resultType="map" parameterType="map">
+         WITH BASE AS (
+                WITH RECURSIVE t AS (
+                    SELECT  CONCAT( SUBSTRING(#{strt_dt},1,4) ,'-',SUBSTRING(#{strt_dt},5,6) , '-01') as dt
+                    UNION ALL
+                     SELECT DATE_ADD(t.dt, INTERVAL 1 DAY)
+                       FROM t WHERE DATE_ADD(t.dt, INTERVAL 1 DAY) <![CDATA[<]]> date_format( LAST_DAY( CONCAT( SUBSTRING(#{strt_dt},1,4) , '-',SUBSTRING(#{strt_dt},5,6) , '-01') ) + INTERVAL 1 DAY, '%Y-%m-%d')
+                )
+                SELECT REPLACE(dt,'-','') AS DT
+                  FROM t
+        ),
+        BASE2 AS (
+	   	        WITH RECURSIVE t as (
+	                SELECT  CONCAT(date_format(date_add(STR_TO_DATE(CONCAT(#{strt_dt},'01'),'%Y%m%d'), INTERVAL -1 MONTH), '%Y-%m'),'-01') as dt
+	                UNION ALL
+	                SELECT DATE_ADD(t.dt, INTERVAL 1 DAY) FROM t WHERE DATE_ADD(t.dt, INTERVAL 1 DAY) <![CDATA[<]]> date_format( LAST_DAY( concat(date_format(date_add(STR_TO_DATE(CONCAT(#{strt_dt},'01'),'%Y%m%d'), INTERVAL -1 MONTH), '%Y-%m'),'-01') ) + INTERVAL 1 DAY, '%Y-%m-%d')
+	            )
+	            SELECT REPLACE(dt,'-','') AS DT
+	            FROM t
+        ),
+        BASE3 AS (
+            WITH RECURSIVE cte AS (
+                SELECT 1 AS n
+                UNION ALL
+                SELECT n + 1 FROM cte WHERE n <![CDATA[<]]> 31
+            )
+            SELECT CASE WHEN LENGTH(CAST(n AS CHAR(2))) = 1 THEN CONCAT('0',CAST(n AS CHAR(2)))
+                    ELSE CAST(n AS CHAR(2))
+                    END DATE
+              FROM cte
+         )
+       SELECT AA.*
+            , IFNULL(BB.KILL_YANG,'-') AS CURRENT_CNT
+            , IFNULL(CC.KILL_YANG,'-') AS PRE_CNT
+            , BB.DT AS DT_BB
+            , CC.DT AS DT_CC
+            , ( SELECT VILLAGE_NAME FROM TB_VILLAGE WHERE VILLAGE_ID = #{villageId} ) VILLAGE_NAME
+       FROM BASE3 AA LEFT OUTER JOIN (
+             SELECT A.DT
+               , IFNULL(B.KILL_YANG, 0)  KILL_YANG
+               , #{villageId} VILLAGE_ID
+                 FROM BASE A LEFT OUTER JOIN ( SELECT  SUBSTRING(STAT_HH_STND,1,8) STAT_DD_STND, KILL_YANG, VILLAGE_ID  FROM kf99.TT_YANG_WAR_INFO b WHERE VILLAGE_ID = #{villageId} AND WAR_TIME_TYPE= #{type} ) B ON A.DT = B.STAT_DD_STND
+         ) BB ON AA.DATE = SUBSTRING(BB.DT,7,8)
+         LEFT OUTER JOIN
+         (
+          SELECT A.DT
+               , IFNULL(B.KILL_YANG, 0)  KILL_YANG
+               , #{villageId} VILLAGE_ID
+           FROM BASE2 A LEFT OUTER JOIN ( SELECT  SUBSTRING(STAT_HH_STND,1,8) STAT_DD_STND, KILL_YANG,VILLAGE_ID  FROM kf99.TT_YANG_WAR_INFO b WHERE VILLAGE_ID = #{villageId} AND WAR_TIME_TYPE= #{type}) B ON A.DT = B.STAT_DD_STND
+        ) CC ON AA.DATE = SUBSTRING(CC.DT,7,8)
+    </select>
+
+    <select id="staticsCurrentYangCnt" resultType="map" parameterType="map">
+        WITH BASE AS (
+             WITH RECURSIVE t AS (
+                    SELECT  CONCAT( SUBSTRING(#{strt_dt},1,4) ,'-',SUBSTRING(#{strt_dt},5,6) , '-01') as dt
+                    UNION ALL
+                    SELECT DATE_ADD(t.dt, INTERVAL 1 DAY)
+                       FROM t WHERE DATE_ADD(t.dt, INTERVAL 1 DAY) <![CDATA[<]]> date_format( LAST_DAY( CONCAT( SUBSTRING(#{strt_dt},1,4) , '-',SUBSTRING(#{strt_dt},5,6) , '-01') ) + INTERVAL 1 DAY, '%Y-%m-%d')
+            )
+            SELECT REPLACE(dt,'-','') AS DT
+            FROM t
+        ),
+        BASE2 AS (
+		   	WITH RECURSIVE t as (
+		      SELECT  CONCAT(date_format(date_add(STR_TO_DATE(CONCAT(#{strt_dt},'01'),'%Y%m%d'), INTERVAL -1 MONTH), '%Y-%m'),'-01') as dt
+		      UNION ALL
+		       SELECT DATE_ADD(t.dt, INTERVAL 1 DAY) FROM t WHERE DATE_ADD(t.dt, INTERVAL 1 DAY) <![CDATA[<]]> date_format( LAST_DAY( concat(date_format(date_add(STR_TO_DATE(CONCAT(#{strt_dt},'01'),'%Y%m%d'), INTERVAL -1 MONTH), '%Y-%m'),'-01') ) + INTERVAL 1 DAY, '%Y-%m-%d')
+		  )
+		  select REPLACE(dt,'-','') AS DT
+		   from t
+  	     ),
+         BASE3 AS (
+			WITH RECURSIVE cte AS (
+			    SELECT 1 AS n
+			    UNION ALL
+			    SELECT n + 1 FROM cte WHERE n <![CDATA[<]]> 31
+			)
+			SELECT CASE WHEN LENGTH(CAST(n AS CHAR(2))) = 1 THEN CONCAT('0',CAST(n AS CHAR(2)))
+					ELSE CAST(n AS CHAR(2))
+					END DATE
+			  FROM cte
+  		 )
+  		 SELECT   ABCD.VILLAGE_NAME
+  		 	    , ABCD.DT
+  		 	    , IFNULL(ABC.KILL_YANG,0) KILL_YANG
+  		 	    , (( IFNULL(ABC.KILL_YANG,0) - IFNULL(ABF.KILL_YANG, 0) ) / IFNULL(ABF.KILL_YANG, 1)) *  100 AS ASC_PER
+  		 	    , CASE WHEN ((( IFNULL(ABC.KILL_YANG,0) - IFNULL(ABF.KILL_YANG, 0) ) / IFNULL(ABF.KILL_YANG, 1)) *  100) <![CDATA[>]]> 0 THEN 'UP'
+  		 			   WHEN ((( IFNULL(ABC.KILL_YANG,0) - IFNULL(ABF.KILL_YANG, 0) ) / IFNULL(ABF.KILL_YANG, 1)) *  100) <![CDATA[<]]> 0 THEN 'DOWN'
+  		 			   ELSE 'NORMAL'
+  		                END ASC_ICON
+  	       FROM	( SELECT
+  		                VILLAGE_NAME
+  		          	  , CONCAT (SUBSTRING(#{strt_dt},1,4) ,'-',SUBSTRING(#{strt_dt},5,6)) AS DT
+  		              , #{villageId} VILLAGE_ID
+  		            FROM TB_VILLAGE AC
+  		            WHERE AC.VILLAGE_ID = #{villageId}) ABCD
+       LEFT OUTER JOIN (
+            SELECT  ROUND(AVG(BB.KILL_YANG),0) KILL_YANG
+       			   , #{villageId} VILLAGE_ID
+       FROM BASE3 AA
+      LEFT OUTER JOIN
+      (
+                SELECT   A.DT
+                       , IFNULL(B.KILL_YANG, 0)  KILL_YANG
+                       ,#{villageId}  VILLAGE_ID
+                  FROM BASE A LEFT OUTER JOIN ( SELECT  SUBSTRING( STAT_HH_STND,1,8) STAT_DD_STND, KILL_YANG,VILLAGE_ID  FROM TT_YANG_WAR_INFO b WHERE VILLAGE_ID = #{villageId} AND WAR_TIME_TYPE= #{type}) B ON A.DT = B.STAT_DD_STND
+            ) BB ON  AA.DATE = SUBSTRING(BB.DT, 7, 8)
+            WHERE BB.KILL_YANG <![CDATA[<>]]> 0
+         GROUP BY BB.VILLAGE_ID
+      ) ABC ON ABCD.VILLAGE_ID = ABC.VILLAGE_ID
+  	 LEFT OUTER JOIN
+     (
+          SELECT  ROUND(AVG(BB.KILL_YANG),0) KILL_YANG
+                    ,#{villageId} VILLAGE_ID
+           FROM BASE3 AA LEFT OUTER JOIN ( SELECT A.DT
+                   , IFNULL(B.KILL_YANG, 0)  KILL_YANG
+                   ,#{villageId}  VILLAGE_ID
+                     FROM BASE2 A LEFT OUTER JOIN ( SELECT  SUBSTRING(STAT_HH_STND,1,8) STAT_DD_STND, KILL_YANG,VILLAGE_ID  FROM TT_YANG_WAR_INFO b WHERE VILLAGE_ID = #{villageId} AND WAR_TIME_TYPE= #{type}) B ON A.DT = B.STAT_DD_STND
+            ) BB ON   AA.DATE = SUBSTRING(BB.DT,7,8)
+            WHERE BB.KILL_YANG <![CDATA[<>]]> 0
             GROUP BY BB.VILLAGE_ID
      ) ABF ON ABCD.VILLAGE_ID = ABF.VILLAGE_ID
     </select>

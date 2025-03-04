@@ -366,4 +366,34 @@ public class StatController implements BackendApi {
         return ResponseEntity.ok(resultList);
     }
 
+    @Operation(method = "GET",
+            summary = "양이 전쟁 전공 통계",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "성공, 페이로드에 array[json] 데이터 반환", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiResponses.class)))),
+                    @ApiResponse(responseCode = "500", description = "실패, 에러 메시지 참조", content = @Content(schema = @Schema(implementation = ApiErrorMessage.class)))
+            }
+    )
+    @GetMapping(value = "yang-data-statics",
+            produces = {"application/json"}
+    )
+    public ResponseEntity<?> staticsYangData(@RequestParam Map<String, Object> map) {
+        Map<String, List<Map<String, Object>>> resultList = new HashMap<String, List<Map<String, Object>>>();
+        try {
+            List<Map<String, Object>> preYangDataList = statSQL.staticsYangCnt(map);
+            List<Map<String, Object>> currentYangDataCnt = statSQL.staticsCurrentYangCnt(map);
+            resultList.put("preCnt", preYangDataList);
+            resultList.put("curCnt", currentYangDataCnt);
+        } catch (Exception ex) {
+            LOGGER.info("staticsYangData are " + ex.toString());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(BackendApi.getErrorMessage(
+                            HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                            Message.TRANSACTION_FAILURE,
+                            ErrorCode.INVALID_PARAMETER,
+                            ex.getMessage()
+                    ));
+        }
+        return ResponseEntity.ok(resultList);
+    }
+
 }

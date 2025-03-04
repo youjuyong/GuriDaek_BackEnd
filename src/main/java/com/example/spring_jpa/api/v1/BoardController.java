@@ -386,7 +386,6 @@ public class BoardController implements BackendApi {
         BufferedInputStream ips = null;
         OutputStream ops = null;
         response.reset();
-    System.out.println(map);
         try {
             fileMap = boardSQL.fileDownload(map);
                 System.out.println(fileMap);
@@ -464,7 +463,7 @@ public class BoardController implements BackendApi {
 	}
 
     @Operation(method = "GET",
-            summary = "공지 컨텐트 미지ㅣ 리스트",
+            summary = "공지 컨텐트 이미지 리스트",
             responses = {
                     @ApiResponse(responseCode = "200", description = "성공, 페이로드에 array[json] 데이터 반환", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiResponses.class)))),
                     @ApiResponse(responseCode = "500", description = "실패, 에러 메시지 참조", content = @Content(schema = @Schema(implementation = ApiErrorMessage.class)))

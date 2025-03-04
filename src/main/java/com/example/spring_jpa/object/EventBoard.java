@@ -101,6 +101,126 @@ public class EventBoard implements Serializable {
         this.emal = emal;
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getTextTitl() {
+        return textTitl;
+    }
+
+    public void setTextTitl(String textTitl) {
+        this.textTitl = textTitl;
+    }
+
+    public Integer getRtrvCnt() {
+        return rtrvCnt;
+    }
+
+    public void setRtrvCnt(Integer rtrvCnt) {
+        this.rtrvCnt = rtrvCnt;
+    }
+
+    public String getBordType() {
+        return bordType;
+    }
+
+    public void setBordType(String bordType) {
+        this.bordType = bordType;
+    }
+
+    public Integer getEventTerm() {
+        return eventTerm;
+    }
+
+    public void setEventTerm(Integer eventTerm) {
+        this.eventTerm = eventTerm;
+    }
+
+    public LocalDateTime getRegDt() {
+        return regDt;
+    }
+
+    public void setRegDt(LocalDateTime regDt) {
+        this.regDt = regDt;
+    }
+
+    public LocalDateTime getUpdDt() {
+        return updDt;
+    }
+
+    public void setUpdDt(LocalDateTime updDt) {
+        this.updDt = updDt;
+    }
+
+    public String getUseYn() {
+        return useYn;
+    }
+
+    public void setUseYn(String useYn) {
+        this.useYn = useYn;
+    }
+
+    public String getImptYn() {
+        return imptYn;
+    }
+
+    public void setImptYn(String imptYn) {
+        this.imptYn = imptYn;
+    }
+
+    public String getPopDsplYn() {
+        return popDsplYn;
+    }
+
+    public void setPopDsplYn(String popDsplYn) {
+        this.popDsplYn = popDsplYn;
+    }
+
+    public LocalDateTime getPopStrtDt() {
+        return popStrtDt;
+    }
+
+    public void setPopStrtDt(LocalDateTime popStrtDt) {
+        this.popStrtDt = popStrtDt;
+    }
+
+    public LocalDateTime getPopEndDt() {
+        return popEndDt;
+    }
+
+    public void setPopEndDt(LocalDateTime popEndDt) {
+        this.popEndDt = popEndDt;
+    }
+
+    public String getWrtr() {
+        return wrtr;
+    }
+
+    public void setWrtr(String wrtr) {
+        this.wrtr = wrtr;
+    }
+
+    public String getPwd() {
+        return pwd;
+    }
+
+    public void setPwd(String pwd) {
+        this.pwd = pwd;
+    }
+
+    public String getEmal() {
+        return emal;
+    }
+
+    public void setEmal(String emal) {
+        this.emal = emal;
+    }
+
     @Override
     public String toString() {
         return "EventBoard{" +
