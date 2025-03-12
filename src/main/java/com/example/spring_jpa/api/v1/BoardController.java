@@ -3,6 +3,7 @@ package com.example.spring_jpa.api.v1;
 import com.example.spring_jpa.api.*;
 import com.example.spring_jpa.api.v1.repository.EventBoardPrizeRepo;
 import com.example.spring_jpa.api.v1.repository.EventBoardRepo;
+import com.example.spring_jpa.api.v1.repository.MainBoardRepo;
 import com.example.spring_jpa.data.GuriSQL_BOARD;
 import com.example.spring_jpa.data.GuriSQL_USER;
 import com.example.spring_jpa.jwt.MemberRequestDto;
@@ -11,6 +12,7 @@ import com.example.spring_jpa.jwt.TokenProvider;
 import com.example.spring_jpa.object.EventBoard;
 import com.example.spring_jpa.object.EventBoardPrize;
 import com.example.spring_jpa.object.Member;
+import com.example.spring_jpa.object.TbMainBord;
 import com.google.common.collect.Maps;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -64,6 +66,7 @@ public class BoardController implements BackendApi {
     private static final Logger LOGGER = LoggerFactory.getLogger(BoardController.class);
     private final GuriSQL_BOARD       boardSQL;
     private final EventBoardRepo      evntRepo;
+    private final MainBoardRepo       mainRepo;
     private final EventBoardPrizeRepo eventPrizeRepo;
     @Override
     @PostConstruct
@@ -237,7 +240,36 @@ public class BoardController implements BackendApi {
         return ResponseEntity.ok(resultList);
     }
 
-      @Operation(method = "POST",
+
+
+    @Operation(method = "GET",
+            summary = "메인 공지 댓글 리스트",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "성공, 페이로드에 array[json] 데이터 반환", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiResponses.class)))),
+                    @ApiResponse(responseCode = "500", description = "실패, 에러 메시지 참조", content = @Content(schema = @Schema(implementation = ApiErrorMessage.class)))
+            }
+    )
+    @GetMapping(value = "main-board-review-list",
+            produces = {"application/json"}
+    )
+    public ResponseEntity<?> MainBoardReviewList(@RequestParam Map<String, Object> map) {
+        List<Map<String, Object>> resultList = Arrays.asList();
+
+        try {
+            resultList = boardSQL.getMainBoardReviewList(map);
+        } catch ( RuntimeException ex ) {
+          return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(BackendApi.getErrorMessage(
+							HttpStatus.INTERNAL_SERVER_ERROR.value(),
+							Message.TRANSACTION_FAILURE,
+							ErrorCode.INVALID_PARAMETER,
+							ex.getMessage()
+					));
+        }
+        return ResponseEntity.ok(resultList);
+    }
+
+    @Operation(method = "POST",
             summary = "조회수",
             responses = {
                     @ApiResponse(responseCode = "200", description = "성공, 페이로드에 array[json] 데이터 반환", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiResponses.class)))),
@@ -316,6 +348,37 @@ public class BoardController implements BackendApi {
         return ResponseEntity.ok(resultList);
     }
 
+    @Operation(method = "POST",
+            summary = "메인 공지사항 조회수 증가",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "성공, 페이로드에 array[json] 데이터 반환", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiResponses.class)))),
+                    @ApiResponse(responseCode = "500", description = "실패, 에러 메시지 참조", content = @Content(schema = @Schema(implementation = ApiErrorMessage.class)))
+            }
+    )
+    @PostMapping(value = "main-view-count",
+            produces = {"application/json"}
+    )
+      @Transactional
+    public ResponseEntity<?> mainViewCount(@RequestParam  Map<String, Object> map,   HttpServletRequest request,
+                           HttpServletResponse response ) {
+        List<Map<String, Object>> resultList = Arrays.asList();
+        String textId = String.valueOf(map.get("text_id"));
+        try {
+               TbMainBord tmb = mainRepo.findById(textId);
+               tmb.addViewCount();
+               tmb.setRtrvCnt(tmb.getRtrvCnt());
+        } catch ( RuntimeException ex ) {
+                  return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(BackendApi.getErrorMessage(
+							HttpStatus.INTERNAL_SERVER_ERROR.value(),
+							Message.TRANSACTION_FAILURE,
+							ErrorCode.INVALID_PARAMETER,
+							ex.getMessage()
+					));
+        }
+        return ResponseEntity.ok(resultList);
+    }
+
       @Operation(method = "PUT",
             summary = "이벤트 공지 리뷰 입력",
             responses = {
@@ -331,6 +394,33 @@ public class BoardController implements BackendApi {
 
         try {
             result = boardSQL.putEventBoardReviewInfo(map);
+        } catch ( RuntimeException ex ) {
+          return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(BackendApi.getErrorMessage(
+							HttpStatus.INTERNAL_SERVER_ERROR.value(),
+							Message.TRANSACTION_FAILURE,
+							ErrorCode.INVALID_PARAMETER,
+							ex.getMessage()
+					));
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    @Operation(method = "PUT",
+            summary = "메인 공지 댓글 입력",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "성공, 페이로드에 array[json] 데이터 반환", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiResponses.class)))),
+                    @ApiResponse(responseCode = "500", description = "실패, 에러 메시지 참조", content = @Content(schema = @Schema(implementation = ApiErrorMessage.class)))
+            }
+    )
+    @PutMapping(value = "main-board-review",
+            produces = {"application/json"}
+    )
+    public ResponseEntity<?> putMainBoardReviewInfo(@RequestParam Map<String, Object> map) {
+        int result = 0;
+
+        try {
+            result = boardSQL.putMainBoardReviewInfo(map);
         } catch ( RuntimeException ex ) {
           return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body(BackendApi.getErrorMessage(
@@ -370,6 +460,33 @@ public class BoardController implements BackendApi {
         return ResponseEntity.ok(result);
     }
 
+    @Operation(method = "DELETE",
+            summary = "메인 공지 리뷰 삭제",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "성공, 페이로드에 array[json] 데이터 반환", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiResponses.class)))),
+                    @ApiResponse(responseCode = "500", description = "실패, 에러 메시지 참조", content = @Content(schema = @Schema(implementation = ApiErrorMessage.class)))
+            }
+    )
+    @DeleteMapping(value = "main-board-review-remove",
+            produces = {"application/json"}
+    )
+    public ResponseEntity<?> deleteMainBoardReviewInfo(@RequestParam Map<String, Object> map) {
+        int result = 0;
+
+        try {
+            result = boardSQL.deleteMainBoardRevieInfo(map);
+        } catch ( RuntimeException ex ) {
+          return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(BackendApi.getErrorMessage(
+							HttpStatus.INTERNAL_SERVER_ERROR.value(),
+							Message.TRANSACTION_FAILURE,
+							ErrorCode.INVALID_PARAMETER,
+							ex.getMessage()
+					));
+        }
+        return ResponseEntity.ok(result);
+    }
+
     @Operation(method = "POST",
             summary = "이벤트 공지 리뷰 삭제",
             responses = {
@@ -388,10 +505,8 @@ public class BoardController implements BackendApi {
         response.reset();
         try {
             fileMap = boardSQL.fileDownload(map);
-                System.out.println(fileMap);
             String filenm = fileMap.get("FILE_NAME").toString();
             String encordedFilename = URLEncoder.encode(filenm, "UTF-8").replace("+", "%20");
-              System.out.println(encordedFilename);
             response.setContentType(getMimeType(filenm));
             response.setHeader("Content-Disposition", "attachment; filename=\'" + filenm + "\';");
             response.setHeader("Content-Disposition", "attachment;filename=" + encordedFilename + ";filenm*= UTF-8''" + encordedFilename);
@@ -514,6 +629,57 @@ public class BoardController implements BackendApi {
     }
 
     @Operation(method = "GET",
+            summary = "메인 공지 컨텐트 이미지 리스트",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "성공, 페이로드에 array[json] 데이터 반환", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiResponses.class)))),
+                    @ApiResponse(responseCode = "500", description = "실패, 에러 메시지 참조", content = @Content(schema = @Schema(implementation = ApiErrorMessage.class)))
+            }
+    )
+    @GetMapping(value = "main-board-content-list",
+            produces = {"application/json"}
+    )
+    public ResponseEntity<?> getMainBoardContentList(@RequestParam Map<String, Object> map) {
+        List<Map<String, Object>> contentList = Arrays.asList();
+        List<Map<String, Object>> imgList = Arrays.asList();
+
+        Map<String, List<Map<String, Object>>> resultMap = Maps.newHashMap();
+
+        try {
+            contentList = boardSQL.getMainBoardContentList(map);
+            imgList     = boardSQL.getMainBoardContentImgList(map);
+
+            if ( imgList.size() != 0 ) {
+                for ( int i = 0; i < imgList.size(); i++ ) {
+
+                    if( imgList.get(i).get("CONT_IMAG_DATA") == null) {
+				        continue;
+			        }
+
+                    byte[] encoded = org.apache.commons.codec.binary.Base64.encodeBase64((byte[]) imgList.get(i).get("CONT_IMAG_DATA"));
+                    String encoedeString = new String(encoded);
+                    String extension = FilenameUtils.getExtension(String.valueOf(imgList.get(i).get("CONT_IMAG_NAME")));
+                    imgList.get(i).put("extension", extension);
+                    imgList.get(i).remove("CONT_IMAG_DATA");
+                    imgList.get(i).put("encodeStr", encoedeString);
+
+                }
+            }
+            resultMap.put("contentList", contentList);
+            resultMap.put("imgList",         imgList);
+        } catch ( RuntimeException ex ) {
+          return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(BackendApi.getErrorMessage(
+							HttpStatus.INTERNAL_SERVER_ERROR.value(),
+							Message.TRANSACTION_FAILURE,
+							ErrorCode.INVALID_PARAMETER,
+							ex.getMessage()
+					));
+        }
+
+        return ResponseEntity.ok(resultMap);
+    }
+
+    @Operation(method = "GET",
             summary = "공지 컨텐트 미지ㅣ 리스트",
             responses = {
                     @ApiResponse(responseCode = "200", description = "성공, 페이로드에 array[json] 데이터 반환", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiResponses.class)))),
@@ -602,6 +768,32 @@ public class BoardController implements BackendApi {
                                     HttpStatus.OK.value(),
                                     SuccessCode
                             ));
+    }
+
+    @Operation(method = "GET",
+            summary = "메인 공지 리스트",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "성공, 페이로드에 array[json] 데이터 반환", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiResponses.class)))),
+                    @ApiResponse(responseCode = "500", description = "실패, 에러 메시지 참조", content = @Content(schema = @Schema(implementation = ApiErrorMessage.class)))
+            }
+    )
+    @GetMapping(value = "main-board-list",
+            produces = {"application/json"}
+    )
+    public ResponseEntity<?> getMainBoard() {
+        List<TbMainBord> mainBordList = null;
+        try {
+            mainBordList = mainRepo.findAllByUseYnOrderByRegDtDesc("Y");
+        } catch ( RuntimeException ex ) {
+          return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(BackendApi.getErrorMessage(
+							HttpStatus.INTERNAL_SERVER_ERROR.value(),
+							Message.TRANSACTION_FAILURE,
+							ErrorCode.INVALID_PARAMETER,
+							ex.getMessage()
+					));
+        }
+        return ResponseEntity.ok(mainBordList);
     }
 
 }

@@ -42,6 +42,24 @@
   		   WHERE A.TEXT_ID  = #{text_id}
 	</select>
 
+	<!-- 메인 공지 사항 본문 리스트 -->
+	<select id="getMainBoardContentList" resultType="map" parameterType="map" >
+		 SELECT   A.TEXT_ID
+  			    , A.TEXT_TITL
+  		        , IFNULL(C.TEXT_CONT, '정보없음') TEXT_CONT
+  		   FROM TB_MAIN_BORD A LEFT OUTER JOIN TB_MAIN_TEXT_CONT C ON A.TEXT_ID = C.TEXT_ID
+   		  WHERE A.TEXT_ID  = #{text_id}
+	</select>
+
+	<!-- 메인 공지 사항 본문 이미지 리스트 -->
+	<select id="getMainBoardContentImgList" resultType="map" parameterType="map" >
+		  SELECT
+  			     A.CONT_IMAG_DATA
+		  	   , A.CONT_IMAG_NAME
+  			FROM TB_MAIN_BORD_IMAG A
+  		   WHERE A.TEXT_ID  = #{text_id}
+	</select>
+
 	<select id="getEventBoardDateTime" parameterType="map" resultType="map">
 		SELECT *
 		 FROM kf99.TB_EVENT_DATE
@@ -112,6 +130,17 @@
         ORDER BY REG_DT DESC
     </select>
 
+	<select id="getMainBoardReviewList" resultType="map" parameterType="map">
+        SELECT TEXT_ID
+	        , ( SELECT USER_NAME FROM kf99.TB_USER WHERE USER_ID = A.USER_ID ) USER_NAME
+	        , COMMENT
+	        , date_format(REG_DT, '%Y-%m-%d %H:%I:%S') REG_DT
+         FROM kf99.TB_MAIN_BOARD_REVIEW A
+        WHERE 1=1
+           AND TEXT_ID = #{text_id}
+        ORDER BY REG_DT DESC
+    </select>
+
     <insert id="putEventBoardReviewInfo" parameterType="map">
         INSERT INTO
           kf99.TB_EVENT_BOARD_REVIEW
@@ -124,8 +153,26 @@
               )
     </insert>
 
+	<insert id="putMainBoardReviewInfo" parameterType="map">
+        INSERT INTO
+          kf99.TB_MAIN_BOARD_REVIEW
+        VALUES(
+             #{text_id}
+             , #{user_id}
+             , #{content}
+             , NOW()
+             , NOW()
+              )
+    </insert>
+
     <delete id="deleteEventBoardRevieInfo" parameterType="map">
         DELETE FROM kf99.TB_EVENT_BOARD_REVIEW
+              WHERE TEXT_ID =  #{text_id}
+                AND USER_ID  = #{user_id}
+    </delete>
+
+	<delete id="deleteMainBoardRevieInfo" parameterType="map">
+        DELETE FROM kf99.TB_MAIN_BOARD_REVIEW
               WHERE TEXT_ID =  #{text_id}
                 AND USER_ID  = #{user_id}
     </delete>
