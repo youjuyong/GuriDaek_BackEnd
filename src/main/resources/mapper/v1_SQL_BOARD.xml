@@ -124,6 +124,7 @@
 	        , ( SELECT USER_NAME FROM kf99.TB_USER WHERE USER_ID = A.USER_ID ) USER_NAME
 	        , COMMENT
 	        , date_format(REG_DT, '%Y-%m-%d %H:%I:%S') REG_DT
+        	, USER_ID
          FROM kf99.TB_EVENT_BOARD_REVIEW A
         WHERE 1=1
            AND TEXT_ID = #{text_id}
@@ -135,6 +136,7 @@
 	        , ( SELECT USER_NAME FROM kf99.TB_USER WHERE USER_ID = A.USER_ID ) USER_NAME
 	        , COMMENT
 	        , date_format(REG_DT, '%Y-%m-%d %H:%I:%S') REG_DT
+        	, USER_ID
          FROM kf99.TB_MAIN_BOARD_REVIEW A
         WHERE 1=1
            AND TEXT_ID = #{text_id}
