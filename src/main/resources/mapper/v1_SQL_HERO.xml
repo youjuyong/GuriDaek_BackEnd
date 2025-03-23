@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTO Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.spring_jpa.data.GuriSQL_HERO">
+
+    <!-- 탈것 리스트 -->
+    <select id="heroList" resultType="map" parameterType="map">
+     WITH SCORE AS(
+        SELECT A.HERO_ID
+             , IFNULL(FORMAT(AVG(B.SCORE),1),0) SCORE
+          FROM kf99.TB_RECALL_HERO A LEFT OUTER JOIN kf99.TB_HERO_SCORE B
+            ON A.HERO_ID = B.HERO_ID
+      GROUP BY HERO_ID
+     )
+        SELECT     A.HERO_ID
+                 , A.HERO_NAME
+             	 , A.HERO_NUM
+                 , A.HERO_WEAPON_TYPE AS HERO_WEAPON_TYPE_CODE
+             	 , (SELECT COMM_CD_KOR_NAME FROM kf99.TB_COMM_CD WHERE COMM_CD = A.HERO_TYPE 		   AND COMM_CLSF_CD = 'RHDT' ) AS  HERO_TYPE
+             	 , (SELECT COMM_CD_KOR_NAME FROM kf99.TB_COMM_CD WHERE COMM_CD = A.HERO_VERSION_TYPE   AND COMM_CLSF_CD = 'RHVT' ) AS  HERO_VERSION_TYPE
+             	 , (SELECT COMM_CD_KOR_NAME FROM kf99.TB_COMM_CD WHERE COMM_CD = A.HERO_WEAPON_TYPE    AND COMM_CLSF_CD = 'RHWT' ) AS  HERO_WEAPON_TYPE
+             	 , (SELECT COMM_CD_KOR_NAME FROM kf99.TB_COMM_CD WHERE COMM_CD = A.HERO_BURF_TYPE      AND COMM_CLSF_CD = 'RHBT' ) AS  HERO_BURF_TYPE
+         		 , IFNULL(B.FORCE, 0)                 AS M_FORCE
+         		 , IFNULL(B.AGIL, 0)                  AGIL
+         		 , IFNULL(B.LIFE, 0)                  LIFE
+         		 , IFNULL(B.MAGIC_FORCE, 0)           MAGIC_FORCE
+                 , IFNULL(B.DEFAULT_LONG,0)           DEFAULT_LONG
+                 , IFNULL(B.DEFAULT_DAM, 0)           DEFAULT_DAM
+                 , IFNULL(B.DEFAULT_SHEILD, 0)        DEFAULT_SHEILD
+                 , IFNULL(B.AMULET, '정보없음')         AMULET
+                 , IFNULL(B.SELF_BURF, '정보없음')      SELF_BURF
+                 , IFNULL(B.ELF_PREMIUM, '정보없음')    ELF_PREMIUM
+                 , IFNULL(B.PLUS_STAT, '정보없음')      PLUS_STAT
+                 , C.SCORE
+          FROM kf99.TB_RECALL_HERO A LEFT OUTER JOIN kf99.TB_RECALL_HERO_DETL B ON A.HERO_ID = B.HERO_ID LEFT OUTER JOIN SCORE C on A.HERO_ID = C.HERO_ID
+         WHERE 1=1
+           AND A.DEL_YN = 'N'
+           <if test="heroType != null and !heroType.equalsIgnoreCase('')">
+               AND A.HERO_TYPE            = #{heroType}
+           </if>
+           <if test="versionType != null and !versionType.equalsIgnoreCase('')">
+               AND A.HERO_VERSION_TYPE    = #{versionType}
+           </if>
+           <if test="heroWeaponType != null and !heroWeaponType.equalsIgnoreCase('')">
+               AND A.HERO_WEAPON_TYPE     = #{heroWeaponType}
+           </if>
+           <if test="heroBurpType != null and !heroBurpType.equalsIgnoreCase('')">
+               AND A.HERO_BURF_TYPE       = #{heroBurpType}
+           </if>
+           <if test="keyword != null and !keyword.equalsIgnoreCase('')">
+               AND A.HERO_NAME      LIKE  '%${keyword}%'
+           </if>
+      ORDER BY A.HERO_NUM
+
+    </select>
+
+</mapper>

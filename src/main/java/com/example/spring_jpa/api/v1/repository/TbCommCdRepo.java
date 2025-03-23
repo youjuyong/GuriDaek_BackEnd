@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface TbCommCdRepo extends CrudRepository<TbCommCd, Long> {
     List<TbCommCd> findById(String id);
+
+    List<TbCommCd> findByIdAndUseYn(String id, String useYn);
 }
