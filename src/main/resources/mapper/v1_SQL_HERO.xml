@@ -7,7 +7,7 @@
      WITH SCORE AS(
         SELECT A.HERO_ID
              , IFNULL(FORMAT(AVG(B.SCORE),1),0) SCORE
-          FROM kf99.TB_RECALL_HERO A LEFT OUTER JOIN kf99.TB_HERO_SCORE B
+          FROM kf99.TB_RECALL_HERO A LEFT OUTER JOIN kf99.TB_RECALL_HERO_SCORE B
             ON A.HERO_ID = B.HERO_ID
       GROUP BY HERO_ID
      )
@@ -53,4 +53,35 @@
 
     </select>
 
+     <select id="getHeroReviewList" resultType="map" parameterType="map">
+        SELECT HERO_ID
+            ,  USER_ID
+	        , ( select USER_NAME from kf99.TB_USER where USER_ID = A.USER_ID ) USER_NAME
+	        , SCORE
+	        , COMMENT
+	        , date_format(REG_DT, '%Y-%m-%d %H:%I:%S') REG_DT
+         FROM kf99.TB_RECALL_HERO_SCORE A
+        WHERE 1=1
+          AND HERO_ID = #{objectId}
+        ORDER  BY REG_DT DESC
+    </select>
+
+    <insert id="putHeroRevieInfo" parameterType="map">
+        INSERT INTO
+          kf99.TB_RECALL_HERO_SCORE
+        VALUES(
+               #{objectId}
+             , #{userId}
+             , #{score}
+             , #{content}
+             , NOW()
+             , NOW()
+              )
+    </insert>
+
+    <delete id="deleteHeroRevieInfo" parameterType="map">
+        DELETE FROM kf99.TB_RECALL_HERO_SCORE
+              WHERE HERO_ID =  #{objectId}
+                AND USER_ID  = #{userId}
+    </delete>
 </mapper>

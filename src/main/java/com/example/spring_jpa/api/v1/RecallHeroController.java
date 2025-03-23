@@ -103,4 +103,84 @@ public class RecallHeroController implements BackendApi {
         return ResponseEntity.ok(resultList);
     }
 
+    @Operation(method = "PUT",
+            summary = "영웅 리뷰 입력",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "성공, 페이로드에 array[json] 데이터 반환", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiResponses.class)))),
+                    @ApiResponse(responseCode = "500", description = "실패, 에러 메시지 참조", content = @Content(schema = @Schema(implementation = ApiErrorMessage.class)))
+            }
+    )
+    @PutMapping(value = "review",
+            produces = {"application/json"}
+    )
+    public ResponseEntity<?> putHeroRevieInfo(@RequestParam Map<String, Object> map) {
+        int result = 0;
+
+        try {
+            result = heroSQL.putHeroRevieInfo(map);
+        } catch ( RuntimeException ex ) {
+          return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(BackendApi.getErrorMessage(
+							HttpStatus.INTERNAL_SERVER_ERROR.value(),
+							Message.TRANSACTION_FAILURE,
+							ErrorCode.INVALID_PARAMETER,
+							ex.getMessage()
+					));
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    @Operation(method = "GET",
+            summary = "영웅 리뷰 리스트",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "성공, 페이로드에 array[json] 데이터 반환", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiResponses.class)))),
+                    @ApiResponse(responseCode = "500", description = "실패, 에러 메시지 참조", content = @Content(schema = @Schema(implementation = ApiErrorMessage.class)))
+            }
+    )
+    @GetMapping(value = "review-list",
+            produces = {"application/json"}
+    )
+    public ResponseEntity<?> getHeroReviewList(@RequestParam Map<String, Object> map) {
+        List<Map<String, Object>> resultList = Arrays.asList();
+
+        try {
+            resultList = heroSQL.getHeroReviewList(map);
+        } catch ( RuntimeException ex ) {
+          return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(BackendApi.getErrorMessage(
+							HttpStatus.INTERNAL_SERVER_ERROR.value(),
+							Message.TRANSACTION_FAILURE,
+							ErrorCode.INVALID_PARAMETER,
+							ex.getMessage()
+					));
+        }
+        return ResponseEntity.ok(resultList);
+    }
+
+    @Operation(method = "DELETE",
+            summary = "영웅 리뷰 삭제",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "성공, 페이로드에 array[json] 데이터 반환", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiResponses.class)))),
+                    @ApiResponse(responseCode = "500", description = "실패, 에러 메시지 참조", content = @Content(schema = @Schema(implementation = ApiErrorMessage.class)))
+            }
+    )
+    @DeleteMapping(value = "review-remove",
+            produces = {"application/json"}
+    )
+    public ResponseEntity<?> deleteHeroRevieInfo(@RequestParam Map<String, Object> map) {
+        int result = 0;
+
+        try {
+            result = heroSQL.deleteHeroRevieInfo(map);
+        } catch ( RuntimeException ex ) {
+          return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(BackendApi.getErrorMessage(
+							HttpStatus.INTERNAL_SERVER_ERROR.value(),
+							Message.TRANSACTION_FAILURE,
+							ErrorCode.INVALID_PARAMETER,
+							ex.getMessage()
+					));
+        }
+        return ResponseEntity.ok(result);
+    }
 }
