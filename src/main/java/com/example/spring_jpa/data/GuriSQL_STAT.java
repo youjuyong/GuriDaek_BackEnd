@@ -22,9 +22,13 @@ public interface GuriSQL_STAT {
     public void insertCraftsManList(Map map);
     // 마을 주민수 통계
     public List<Map<String, Object>> staticsVillageHumanCnt (Map map);
+    // 서버 주민수 통계
+    public List<Map<String, Object>> staticsServerHumanCnt (Map map);
     // 검색 조건 달 주민수 통계
     public List<Map<String, Object>> staticsCurrentHumanCnt (Map map);
-      // 마을 주민수 통계
+    // 검색조건 서버별 주민수 통계
+    public List<Map<String, Object>> staticsServerCurrentHumanCnt  (Map map);
+    // 마을 주민수 통계
     public List<Map<String, Object>> staticsYangCnt (Map map);
     // 검색 조건 달 주민수 통계
     public List<Map<String, Object>> staticsCurrentYangCnt (Map map);

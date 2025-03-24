@@ -367,6 +367,37 @@ public class StatController implements BackendApi {
     }
 
     @Operation(method = "GET",
+            summary = "서버 주민수 통계",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "성공, 페이로드에 array[json] 데이터 반환", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiResponses.class)))),
+                    @ApiResponse(responseCode = "500", description = "실패, 에러 메시지 참조", content = @Content(schema = @Schema(implementation = ApiErrorMessage.class)))
+            }
+    )
+    @GetMapping(value = "server-human-statics",
+            produces = {"application/json"}
+    )
+    public ResponseEntity<?> staticsServerHumanCnt(@RequestParam Map<String, Object> map) {
+        Map<String, List<Map<String, Object>>> resultList = new HashMap<String, List<Map<String, Object>>>();
+        try {
+            List<Map<String, Object>> preCurrentCntList = statSQL.staticsServerHumanCnt(map);
+            List<Map<String, Object>> currentMonthCnt = statSQL.staticsServerCurrentHumanCnt(map);
+
+            resultList.put("preCnt", preCurrentCntList);
+            resultList.put("curCnt", currentMonthCnt);
+        } catch (Exception ex) {
+            LOGGER.info("staticsVillageHumanCnt are " + ex.toString());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(BackendApi.getErrorMessage(
+                            HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                            Message.TRANSACTION_FAILURE,
+                            ErrorCode.INVALID_PARAMETER,
+                            ex.getMessage()
+                    ));
+        }
+        return ResponseEntity.ok(resultList);
+    }
+
+    @Operation(method = "GET",
             summary = "양이 전쟁 전공 통계",
             responses = {
                     @ApiResponse(responseCode = "200", description = "성공, 페이로드에 array[json] 데이터 반환", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiResponses.class)))),

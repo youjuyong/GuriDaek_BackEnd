@@ -285,6 +285,139 @@
      ) ABF ON ABCD.VILLAGE_ID = ABF.VILLAGE_ID
     </select>
 
+    <select id="staticsServerHumanCnt" resultType="map" parameterType="map">
+         WITH BASE AS (
+                WITH RECURSIVE t AS (
+                    SELECT  CONCAT( SUBSTRING(#{strt_dt},1,4) ,'-',SUBSTRING(#{strt_dt},5,6) , '-01') as dt
+                    UNION ALL
+                     SELECT DATE_ADD(t.dt, INTERVAL 1 DAY)
+                       FROM t WHERE DATE_ADD(t.dt, INTERVAL 1 DAY) <![CDATA[<]]> date_format( LAST_DAY( CONCAT( SUBSTRING(#{strt_dt},1,4) , '-',SUBSTRING(#{strt_dt},5,6) , '-01') ) + INTERVAL 1 DAY, '%Y-%m-%d')
+                )
+                SELECT REPLACE(dt,'-','') AS DT
+                  FROM t
+        ),
+        BASE2 AS (
+	   	        WITH RECURSIVE t as (
+	                SELECT  CONCAT(date_format(date_add(STR_TO_DATE(CONCAT(#{strt_dt},'01'),'%Y%m%d'), INTERVAL -1 MONTH), '%Y-%m'),'-01') as dt
+	                UNION ALL
+	                SELECT DATE_ADD(t.dt, INTERVAL 1 DAY) FROM t WHERE DATE_ADD(t.dt, INTERVAL 1 DAY) <![CDATA[<]]> date_format( LAST_DAY( concat(date_format(date_add(STR_TO_DATE(CONCAT(#{strt_dt},'01'),'%Y%m%d'), INTERVAL -1 MONTH), '%Y-%m'),'-01') ) + INTERVAL 1 DAY, '%Y-%m-%d')
+	            )
+	            SELECT REPLACE(dt,'-','') AS DT
+	            FROM t
+        ),
+        BASE3 AS (
+            WITH RECURSIVE cte AS (
+                SELECT 1 AS n
+                UNION ALL
+                SELECT n + 1 FROM cte WHERE n <![CDATA[<]]> 31
+            )
+            SELECT CASE WHEN LENGTH(CAST(n AS CHAR(2))) = 1 THEN CONCAT('0',CAST(n AS CHAR(2)))
+                    ELSE CAST(n AS CHAR(2))
+                    END DATE
+              FROM cte
+         )
+       SELECT AA.*
+            , IFNULL(BB.HUMAN_CNT,'-') AS CURRENT_CNT
+            , IFNULL(CC.HUMAN_CNT,'-') AS PRE_CNT
+            , BB.DT AS DT_BB
+            , CC.DT AS DT_CC
+            , '세종' SERVER_NAME
+       FROM BASE3 AA LEFT OUTER JOIN (
+             SELECT A.DT
+               , IFNULL(B.HUMAN_CNT, 0)  HUMAN_CNT
+                 FROM BASE A LEFT OUTER JOIN ( SELECT  SUBSTRING(STAT_DD_STND,1,8) STAT_DD_STND, SUM(HUMAN_CNT) HUMAN_CNT  FROM kf99.TT_VILLAGE_COUNT_INFO b WHERE SUBSTR(STAT_DD_STND,1,6) = #{strt_dt} GROUP BY SUBSTRING(STAT_DD_STND,1,8)) B ON A.DT = B.STAT_DD_STND
+         ) BB ON AA.DATE = SUBSTRING(BB.DT,7,8)
+         LEFT OUTER JOIN
+         (
+          SELECT A.DT
+               , IFNULL(B.HUMAN_CNT, 0)  HUMAN_CNT
+           FROM BASE2 A LEFT OUTER JOIN ( SELECT  SUBSTRING(STAT_DD_STND,1,8) STAT_DD_STND, SUM(HUMAN_CNT) HUMAN_CNT  FROM kf99.TT_VILLAGE_COUNT_INFO b WHERE SUBSTR(STAT_DD_STND,1,6) = DATE_FORMAT( STR_TO_DATE( CONCAT(#{strt_dt} , '01'),'%Y%m%d') - INTERVAL 1 MONTH, '%Y%m') GROUP BY SUBSTRING(STAT_DD_STND,1,8)) B ON A.DT = B.STAT_DD_STND
+        ) CC ON AA.DATE = SUBSTRING(CC.DT,7,8)
+    </select>
+
+    <select id="staticsServerCurrentHumanCnt" resultType="map" parameterType="map">
+       WITH BASE AS (
+             WITH RECURSIVE t AS (
+                    SELECT  CONCAT( SUBSTRING(#{strt_dt},1,4) ,'-',SUBSTRING(#{strt_dt},5,6) , '-01') as dt
+                    UNION ALL
+                    SELECT DATE_ADD(t.dt, INTERVAL 1 DAY)
+                       FROM t WHERE DATE_ADD(t.dt, INTERVAL 1 DAY) <![CDATA[<]]> date_format( LAST_DAY( CONCAT( SUBSTRING(#{strt_dt},1,4) , '-',SUBSTRING(#{strt_dt},5,6) , '-01') ) + INTERVAL 1 DAY, '%Y-%m-%d')
+            )
+            SELECT REPLACE(dt,'-','') AS DT
+            FROM t
+        ),
+         BASE2 AS (
+		   	WITH RECURSIVE t as (
+		      SELECT  CONCAT(date_format(date_add(STR_TO_DATE(CONCAT(#{strt_dt},'01'),'%Y%m%d'), INTERVAL -1 MONTH), '%Y-%m'),'-01') as dt
+		      UNION ALL
+		       SELECT DATE_ADD(t.dt, INTERVAL 1 DAY) FROM t WHERE DATE_ADD(t.dt, INTERVAL 1 DAY) <![CDATA[<]]> date_format( LAST_DAY( concat(date_format(date_add(STR_TO_DATE(CONCAT(#{strt_dt},'01'),'%Y%m%d'), INTERVAL -1 MONTH), '%Y-%m'),'-01') ) + INTERVAL 1 DAY, '%Y-%m-%d')
+		  )
+		  select REPLACE(dt,'-','') AS DT
+		   from t
+  	     ),
+      BASE3 AS (
+			WITH RECURSIVE cte AS (
+			    SELECT 1 AS n
+			    UNION ALL
+			    SELECT n + 1 FROM cte WHERE n <![CDATA[<]]>  31
+			)
+			SELECT CASE WHEN LENGTH(CAST(n AS CHAR(2))) = 1 THEN CONCAT('0',CAST(n AS CHAR(2)))
+					ELSE CAST(n AS CHAR(2))
+					END DATE
+			  FROM cte
+  		 )
+  		 SELECT
+  		          '세종' SERVER_NAME
+  		 	    , CONCAT(SUBSTR(ABC.STAT_DD_STND,1,4),'-',SUBSTR(ABC.STAT_DD_STND,5,6)) DT
+  		 	    , IFNULL(ABC.HUMAN_CNT,0) HUMAN_CNT
+  		 	    , (( IFNULL(ABC.HUMAN_CNT,0) - IFNULL(ABF.HUMAN_CNT, 0) ) / IFNULL(ABF.HUMAN_CNT, 1)) *  100 AS ASC_PER
+  		 	    , CASE WHEN ((( IFNULL(ABC.HUMAN_CNT,0) - IFNULL(ABF.HUMAN_CNT, 0) ) / IFNULL(ABF.HUMAN_CNT, 1)) *  100) <![CDATA[>]]> 0 THEN 'UP'
+  		 			   WHEN ((( IFNULL(ABC.HUMAN_CNT,0) - IFNULL(ABF.HUMAN_CNT, 0) ) / IFNULL(ABF.HUMAN_CNT, 1)) *  100) <![CDATA[<]]> 0 THEN 'DOWN'
+  		 			   ELSE 'NORMAL'
+  		                END ASC_ICON
+  		   FROM
+  		   (
+	  		 SELECT ROUND(AVG(AAA.HUMAN_CNT),0) HUMAN_CNT
+	  		 		,SUBSTRING(AAA.STAT_DD_STND, 1,6) STAT_DD_STND
+	  		 FROM
+	  		 (
+		  		 SELECT  ROUND(SUM(BB.HUMAN_CNT),0) HUMAN_CNT
+		  		 	   , BB.STAT_DD_STND
+		           FROM BASE3 AA
+			      LEFT OUTER JOIN
+			      (
+			                SELECT   A.DT
+			                       , IFNULL(B.HUMAN_CNT, 0)  HUMAN_CNT
+			                       , B.STAT_DD_STND
+			                  FROM BASE A LEFT OUTER JOIN ( SELECT  SUBSTRING( STAT_DD_STND,1,8) STAT_DD_STND, HUMAN_CNT,VILLAGE_ID  FROM TT_VILLAGE_COUNT_INFO b   WHERE SUBSTR(STAT_DD_STND,1,6) = #{strt_dt}) B ON A.DT = B.STAT_DD_STND
+			        ) BB ON  AA.DATE = SUBSTRING(BB.DT, 7, 8)
+		            WHERE BB.HUMAN_CNT <![CDATA[<>]]> 0
+		         GROUP BY BB.STAT_DD_STND
+	        ) AAA
+	       GROUP BY SUBSTRING(AAA.STAT_DD_STND, 1,6)
+      ) ABC ,
+       (
+	  		 SELECT ROUND(AVG(AAAA.HUMAN_CNT),0) HUMAN_CNT
+	  		 		,SUBSTRING(AAAA.STAT_DD_STND, 1,6) STAT_DD_STND
+	  		 FROM
+	  		 (
+		  		 SELECT  ROUND(SUM(BB.HUMAN_CNT),0) HUMAN_CNT
+		  		 	   , BB.STAT_DD_STND
+		           FROM BASE3 AA
+			      LEFT OUTER JOIN
+			      (
+			                SELECT   A.DT
+			                       , IFNULL(B.HUMAN_CNT, 0)  HUMAN_CNT
+			                       , B.STAT_DD_STND
+			                  FROM BASE2 A LEFT OUTER JOIN ( SELECT  SUBSTRING( STAT_DD_STND,1,8) STAT_DD_STND, HUMAN_CNT,VILLAGE_ID  FROM TT_VILLAGE_COUNT_INFO b   WHERE SUBSTR(STAT_DD_STND,1,6) = DATE_FORMAT( STR_TO_DATE(CONCAT(#{strt_dt},'01'),'%Y%m%d') - INTERVAL 1 MONTH, '%Y%m') ) B ON A.DT = B.STAT_DD_STND
+			        ) BB ON  AA.DATE = SUBSTRING(BB.DT, 7, 8)
+		            WHERE BB.HUMAN_CNT <![CDATA[<>]]> 0
+		         GROUP BY BB.STAT_DD_STND
+	        ) AAAA
+	       GROUP BY SUBSTRING(AAAA.STAT_DD_STND, 1,6)
+      ) ABF
+    </select>
+
     <select id="staticsYangCnt" resultType="map" parameterType="map">
          WITH BASE AS (
                 WITH RECURSIVE t AS (
