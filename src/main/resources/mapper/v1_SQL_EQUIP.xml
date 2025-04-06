@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTO Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.spring_jpa.data.GuriSQL_EQUIP">
+
+    <!-- 장비 대여 리스트 -->
+    <select id="equipList" resultType="map">
+       SELECT A.EQUIP_ID
+		 , A.EQUIP_NAME
+		 , ( SELECT COMM_CD_KOR_NAME FROM TB_COMM_CD WHERE COMM_CD = A.EQUIP_LENT_STATUS ) EQUIP_LENT_STATUS
+		 , date_format( A.EQUIP_LENT_PERIOD_END,  '%Y.%m') EQUIP_LENT_PERIOD_END
+		 , date_format( A.EQUIP_LENT_PERIOD_STRT, '%Y.%m') EQUIP_LENT_PERIOD_STRT
+		 , B.EQUIP_IMG
+		 , B.SYMB_IMAG_TYPE
+         , A.EQUIP_LENT_NAME
+      FROM TB_EQUIP_LENT A , TB_EQUIP_LENT_IMG B
+     WHERE 1=1
+      AND A.EQUIP_ID  = B.EQUIP_ID
+    ORDER BY A.EQUIP_LENT_STATUS ASC
+    </select>
+
+</mapper>

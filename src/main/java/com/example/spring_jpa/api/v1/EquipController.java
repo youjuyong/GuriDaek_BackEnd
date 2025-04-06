@@ -1,0 +1,124 @@
+package com.example.spring_jpa.api.v1;
+
+import com.example.spring_jpa.api.ApiErrorMessage;
+import com.example.spring_jpa.api.BackendApi;
+import com.example.spring_jpa.api.ErrorCode;
+import com.example.spring_jpa.api.Message;
+import com.example.spring_jpa.api.v1.repository.EventBoardPrizeRepo;
+import com.example.spring_jpa.api.v1.repository.EventBoardRepo;
+import com.example.spring_jpa.api.v1.repository.MainBoardRepo;
+import com.example.spring_jpa.data.GuriSQL_BOARD;
+import com.example.spring_jpa.data.GuriSQL_EQUIP;
+import com.example.spring_jpa.object.EventBoard;
+import com.example.spring_jpa.object.EventBoardPrize;
+import com.example.spring_jpa.object.TbMainBord;
+import com.google.common.collect.Maps;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.CookieGenerator;
+
+import javax.sql.rowset.serial.SerialBlob;
+import javax.sql.rowset.serial.SerialException;
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.sql.Blob;
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneOffset;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+@Slf4j
+@CrossOrigin("*")
+@RequiredArgsConstructor
+@RestController
+@RequestMapping("/api/equip")
+public class EquipController implements BackendApi {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(EquipController.class);
+    private final GuriSQL_EQUIP equipSQL;
+
+    @Override
+    @PostConstruct
+    public void assertConnection() {
+    }
+
+    @Override
+    @PostConstruct
+    public void loadData() {
+    }
+
+    @Operation(method = "GET",
+            summary = "이벤트 공지 리스트",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "성공, 페이로드에 array[json] 데이터 반환", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiResponses.class)))),
+                    @ApiResponse(responseCode = "500", description = "실패, 에러 메시지 참조", content = @Content(schema = @Schema(implementation = ApiErrorMessage.class)))
+            }
+    )
+    @GetMapping(value = "equip-list",
+            produces = {"application/json"}
+    )
+    public ResponseEntity<?> getEventBoard() {
+        List<Map<String, Object>> resultList = Arrays.asList();
+
+        try {
+            resultList = equipSQL.equipList();
+
+            if (resultList.size() > 0) {
+
+                for (Map<String, Object> map : resultList) {
+                    byte[] bytes = (byte[]) map.get("EQUIP_IMG");
+                    Blob blob = new SerialBlob(bytes);
+                    byte[] img = blob.getBytes(1, (int) blob.length());
+
+                    if (img != null) {
+                        String encodeStr = Base64.encodeBase64String(img);
+                        map.put("imgUrl", encodeStr);
+                    }
+                }
+
+            }
+        } catch ( SerialException se ) {
+            log.error(se.getMessage());
+        } catch ( RuntimeException ex) {
+          return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(BackendApi.getErrorMessage(
+							HttpStatus.INTERNAL_SERVER_ERROR.value(),
+							Message.TRANSACTION_FAILURE,
+							ErrorCode.INVALID_PARAMETER,
+							ex.getMessage()
+					));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return ResponseEntity.ok(resultList);
+    }
+
+
+
+}

@@ -47,7 +47,7 @@ public class TbUser implements Serializable {
     private String userAddr;
 
     @Schema(description = "삭제 여부 (Y/N)")
-    @Column(name = "del_yn", columnDefinition = "varchar(1)")
+    @Column(name = "del_yn", columnDefinition = "char(1)")
     private String delYn;
 
     @Schema(description = "의정부 주민 여부 (Y/N)")
