@@ -82,22 +82,22 @@ public class EquipController implements BackendApi {
     @GetMapping(value = "equip-list",
             produces = {"application/json"}
     )
-    public ResponseEntity<?> getEventBoard() {
+    public ResponseEntity<?> getEventBoard(@RequestParam Map<String , Object> map) {
         List<Map<String, Object>> resultList = Arrays.asList();
 
         try {
-            resultList = equipSQL.equipList();
+            resultList = equipSQL.equipList(map);
 
             if (resultList.size() > 0) {
 
-                for (Map<String, Object> map : resultList) {
-                    byte[] bytes = (byte[]) map.get("EQUIP_IMG");
+                for (Map<String, Object> remap : resultList) {
+                    byte[] bytes = (byte[]) remap.get("EQUIP_IMG");
                     Blob blob = new SerialBlob(bytes);
                     byte[] img = blob.getBytes(1, (int) blob.length());
 
                     if (img != null) {
                         String encodeStr = Base64.encodeBase64String(img);
-                        map.put("imgUrl", encodeStr);
+                        remap.put("imgUrl", encodeStr);
                     }
                 }
 
@@ -119,6 +119,52 @@ public class EquipController implements BackendApi {
         return ResponseEntity.ok(resultList);
     }
 
+    @Operation(method = "GET",
+            summary = "장비 상세 리스트",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "성공, 페이로드에 array[json] 데이터 반환", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiResponses.class)))),
+                    @ApiResponse(responseCode = "500", description = "실패, 에러 메시지 참조", content = @Content(schema = @Schema(implementation = ApiErrorMessage.class)))
+            }
+    )
+    @GetMapping(value = "equip-detl-list",
+            produces = {"application/json"}
+    )
+    public ResponseEntity<?> getEquipDetlList(@RequestParam Map<String , Object> map) {
+        List<Map<String, Object>> resultList = Arrays.asList();
+
+        try {
+            resultList = equipSQL.equipDetlList(map);
+
+            if (resultList.size() > 0) {
+
+                for (Map<String, Object> remap : resultList) {
+                    byte[] bytes = (byte[]) remap.get("EQUIP_IMG");
+                    Blob blob = new SerialBlob(bytes);
+                    byte[] img = blob.getBytes(1, (int) blob.length());
+
+                    if (img != null) {
+                        String encodeStr = Base64.encodeBase64String(img);
+                        remap.put("imgUrl", encodeStr);
+                    }
+                }
+
+            }
+        } catch ( SerialException se ) {
+            log.error(se.getMessage());
+        } catch ( RuntimeException ex) {
+          return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(BackendApi.getErrorMessage(
+							HttpStatus.INTERNAL_SERVER_ERROR.value(),
+							Message.TRANSACTION_FAILURE,
+							ErrorCode.INVALID_PARAMETER,
+							ex.getMessage()
+					));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return ResponseEntity.ok(resultList);
+    }
 
 
 }

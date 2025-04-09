@@ -3,19 +3,54 @@
 <mapper namespace="com.example.spring_jpa.data.GuriSQL_EQUIP">
 
     <!-- 장비 대여 리스트 -->
-    <select id="equipList" resultType="map">
+    <select id="equipList" resultType="map" parameterType="hashmap">
        SELECT A.EQUIP_ID
 		 , A.EQUIP_NAME
 		 , ( SELECT COMM_CD_KOR_NAME FROM TB_COMM_CD WHERE COMM_CD = A.EQUIP_LENT_STATUS ) EQUIP_LENT_STATUS
 		 , date_format( A.EQUIP_LENT_PERIOD_END,  '%Y.%m') EQUIP_LENT_PERIOD_END
 		 , date_format( A.EQUIP_LENT_PERIOD_STRT, '%Y.%m') EQUIP_LENT_PERIOD_STRT
 		 , B.EQUIP_IMG
+         , A.EQUIP_TYPE
+         , A.EQUIP_LENT_STATUS AS EQUIP_LENT_STATUS_CODE
 		 , B.SYMB_IMAG_TYPE
          , A.EQUIP_LENT_NAME
       FROM TB_EQUIP_LENT A , TB_EQUIP_LENT_IMG B
      WHERE 1=1
       AND A.EQUIP_ID  = B.EQUIP_ID
+       	    <if test="typeList != null and !''.equals(typeList)">
+				AND A.EQUIP_TYPE 	    = #{typeList}
+			</if>
+           <if test="codeList != null and !''.equals(codeList)">
+               AND A.EQUIP_LENT_STATUS = #{codeList}
+           </if>
+           <if test="searchCode != null and !''.equals(searchCode)">
+                 <if test="searchCode.equals('ECSO1') and !''.equals(keyword)">
+                   AND A.EQUIP_NAME   LIKE '%${keyword}%'
+                 </if>
+              <if test="searchCode.equals('ECSO2') and !''.equals(keyword)">
+                   AND A.EQUIP_LENT_NAME   LIKE '%${keyword}%'
+              </if>
+           </if>
     ORDER BY A.EQUIP_LENT_STATUS ASC
+    </select>
+
+    <!-- 장비 대여 리스트 -->
+    <select id="equipDetlList" resultType="map" parameterType="hashmap">
+       SELECT A.EQUIP_ID
+		 , A.DETL_EQUIP_ID
+		 , A.DETL_EQUIP_NAME
+		 , A.ENCHANT_YN
+		 , A.ENCHANT_LEVL
+		 , A.STAT_FIR
+		 , A.STAT_SEC
+		 , A.ENCHANT_TYPE
+		 , B.EQUIP_IMG
+		 , B.SYMB_IMAG_TYPE
+      FROM TB_EQUIP_DETL_LENT A , TB_EQUIP_DETL_LENT_IMG B
+     WHERE 1=1
+      AND A.DETL_EQUIP_ID  = B.DETL_EQUIP_ID
+      AND A.EQUIP_ID  = #{equipId}
+    ORDER BY B.DETL_EQUIP_ID  ASC
     </select>
 
 </mapper>
