@@ -58,6 +58,6 @@
          ,EQUIP_LENT_STATUS = 'ELTL2'
          ,EQUIP_LENT_PERIOD_END = NOW()
          , EQUIP_LENT_PERIOD_STRT = DATE_ADD(NOW(), INTERVAL 6 MONTH)
-	 WHERE EQUIP_ID = #{equipId};
+	 WHERE EQUIP_ID = #{equipId}
     </update>
 </mapper>
