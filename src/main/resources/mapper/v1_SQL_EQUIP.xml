@@ -56,8 +56,8 @@
     <update id="equipLentRequest" parameterType="hashmap">
         UPDATE TB_EQUIP_LENT SET  EQUIP_LENT_NAME = #{cityUserName}
          ,EQUIP_LENT_STATUS = 'ELTL2'
-         ,EQUIP_LENT_PERIOD_END = NOW()
-         , EQUIP_LENT_PERIOD_STRT = DATE_ADD(NOW(), INTERVAL 6 MONTH)
+         ,EQUIP_LENT_PERIOD_END = DATE_ADD(NOW(), INTERVAL 6 MONTH)
+         , EQUIP_LENT_PERIOD_STRT = NOW()
 	 WHERE EQUIP_ID = #{equipId}
     </update>
 </mapper>
