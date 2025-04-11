@@ -4,15 +4,8 @@ import com.example.spring_jpa.api.ApiErrorMessage;
 import com.example.spring_jpa.api.BackendApi;
 import com.example.spring_jpa.api.ErrorCode;
 import com.example.spring_jpa.api.Message;
-import com.example.spring_jpa.api.v1.repository.EventBoardPrizeRepo;
-import com.example.spring_jpa.api.v1.repository.EventBoardRepo;
-import com.example.spring_jpa.api.v1.repository.MainBoardRepo;
-import com.example.spring_jpa.data.GuriSQL_BOARD;
 import com.example.spring_jpa.data.GuriSQL_EQUIP;
-import com.example.spring_jpa.object.EventBoard;
-import com.example.spring_jpa.object.EventBoardPrize;
-import com.example.spring_jpa.object.TbMainBord;
-import com.google.common.collect.Maps;
+import com.example.spring_jpa.object.TbUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -20,34 +13,19 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.annotation.PostConstruct;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.util.CookieGenerator;
 
 import javax.sql.rowset.serial.SerialBlob;
 import javax.sql.rowset.serial.SerialException;
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.sql.Blob;
 import java.sql.SQLException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -165,6 +143,34 @@ public class EquipController implements BackendApi {
 
         return ResponseEntity.ok(resultList);
     }
+
+     @Operation(method = "PUT",
+            summary = "장비 대여 신청",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "성공, 페이로드에 array[json] 데이터 반환", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiResponses.class)))),
+                    @ApiResponse(responseCode = "500", description = "실패, 에러 메시지 참조", content = @Content(schema = @Schema(implementation = ApiErrorMessage.class)))
+            }
+    )
+    @PutMapping(value = "equip-lent-name",
+            produces = {"application/json"}
+    )
+    public ResponseEntity<?> getEquipLent(@RequestParam Map<String , Object> map) {
+         System.out.println("test#################################");
+        int result = 0;
+        try {
+            result = equipSQL.equipLentRequest(map);
+        } catch ( RuntimeException ex) {
+          return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(BackendApi.getErrorMessage(
+							HttpStatus.INTERNAL_SERVER_ERROR.value(),
+							Message.TRANSACTION_FAILURE,
+							ErrorCode.INVALID_PARAMETER,
+							ex.getMessage()
+					));
+    }
+        return ResponseEntity.ok(result);
+    }
+
 
 
 }
