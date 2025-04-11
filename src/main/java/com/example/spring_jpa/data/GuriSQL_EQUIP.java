@@ -14,5 +14,6 @@ public interface GuriSQL_EQUIP {
      // 장비 대여 상세 목록
     public List<Map<String, Object>> equipDetlList (Map<String, Object> map);
 
+    int equipLentRequest (Map map);
 }
 
