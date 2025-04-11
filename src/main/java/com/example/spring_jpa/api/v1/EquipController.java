@@ -155,7 +155,6 @@ public class EquipController implements BackendApi {
             produces = {"application/json"}
     )
     public ResponseEntity<?> getEquipLent(@RequestParam Map<String , Object> map) {
-         System.out.println("test#################################");
         int result = 0;
         try {
             result = equipSQL.equipLentRequest(map);
