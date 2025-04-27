@@ -4,10 +4,12 @@ import com.example.spring_jpa.api.ApiErrorMessage;
 import com.example.spring_jpa.api.BackendApi;
 import com.example.spring_jpa.api.ErrorCode;
 import com.example.spring_jpa.api.Message;
+import com.example.spring_jpa.api.v1.repository.TbUserRepo;
 import com.example.spring_jpa.data.GuriSQL_USER;
 import com.example.spring_jpa.jwt.MemberRequestDto;
 import com.example.spring_jpa.jwt.TokenDto;
 import com.example.spring_jpa.jwt.TokenProvider;
+import com.example.spring_jpa.object.TbUser;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -43,6 +45,7 @@ import javax.swing.text.html.Option;
 public class UserController implements BackendApi {
 
     private final GuriSQL_USER userSQL;
+    private final TbUserRepo userRepo;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final TokenProvider tokenProvider;
@@ -189,6 +192,34 @@ public class UserController implements BackendApi {
 							ErrorCode.INVALID_PARAMETER,
 							ex.getMessage()
 					));
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    @Operation(method = "GET",
+            summary = "ID 체크",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "성공, 페이로드에 array[json] 데이터 반환", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiResponses.class)))),
+                    @ApiResponse(responseCode = "500", description = "실패, 에러 메시지 참조", content = @Content(schema = @Schema(implementation = ApiErrorMessage.class)))
+            }
+    )
+    @CrossOrigin(origins = "*", methods = RequestMethod.GET)
+    @GetMapping(value = "id-check",
+            produces = {"application/json"}
+    )
+    public ResponseEntity<?> getUserIdCheck(@RequestParam Map<String, Object> map) {
+
+        TbUser result;
+        try {
+            result = userRepo.findById(String.valueOf(map.get("userId")));
+        } catch (RuntimeException ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(BackendApi.getErrorMessage(
+                            HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                            Message.TRANSACTION_FAILURE,
+                            ErrorCode.INVALID_PARAMETER,
+                            ex.getMessage()
+                    ));
         }
         return ResponseEntity.ok(result);
     }
