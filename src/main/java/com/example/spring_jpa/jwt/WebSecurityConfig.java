@@ -11,6 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
@@ -37,8 +38,12 @@ public class WebSecurityConfig {
                         exceptionConig.authenticationEntryPoint(jwtAuthenticationEntryPoint)
                                 .accessDeniedHandler(jwtAccessDeniedHandler))
                 .authorizeHttpRequests((authorizeRequests) ->
-                        authorizeRequests.requestMatchers("/api/**").permitAll()
-                                .requestMatchers("/api/swagger-ui/**").permitAll()
+                        authorizeRequests.requestMatchers("/api/**").permitAll() .requestMatchers(
+                                                new AntPathRequestMatcher(
+                                                        "/api/v1/docs/swagger*/**"),
+                                                new AntPathRequestMatcher("/v3/api-docs/**")
+                                                )
+                                .permitAll()
                                 .anyRequest().authenticated())
             .addFilterBefore(new JwtFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class);
         return http.build();
