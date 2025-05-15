@@ -7,6 +7,7 @@ import com.google.common.collect.Maps;
 
 import com.example.spring_jpa.api.ApiErrorMessage;
 import com.example.spring_jpa.api.BackendApi;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.apache.commons.compress.utils.Lists;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -143,7 +144,7 @@ public class StatController implements BackendApi {
     }
 
     @Operation(method = "POST",
-            summary = "마을 주신수 업로드",
+            summary = "마을 주민수 업로드",
             responses = {
                     @ApiResponse(responseCode = "200", description = "성공, 페이로드에 array[json] 데이터 반환", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiResponses.class)))),
                     @ApiResponse(responseCode = "500", description = "실패, 에러 메시지 참조", content = @Content(schema = @Schema(implementation = ApiErrorMessage.class)))
@@ -337,7 +338,11 @@ public class StatController implements BackendApi {
     }
 
     @Operation(method = "GET",
-            summary = "마을 리스트",
+            summary = "마을 주민수 통계",
+            parameters = {
+                    @Parameter(name = "strt_dt", description = "날짜", required = true, example = "202505"),
+                    @Parameter(name = "villageId", description = "마을ID", required = true, example = "1"),
+            },
             responses = {
                     @ApiResponse(responseCode = "200", description = "성공, 페이로드에 array[json] 데이터 반환", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiResponses.class)))),
                     @ApiResponse(responseCode = "500", description = "실패, 에러 메시지 참조", content = @Content(schema = @Schema(implementation = ApiErrorMessage.class)))
@@ -368,6 +373,10 @@ public class StatController implements BackendApi {
 
     @Operation(method = "GET",
             summary = "서버 주민수 통계",
+            parameters = {
+                    @Parameter(name = "strt_dt", description = "날짜", required = true, example = "202505"),
+                    @Parameter(name = "villageId", description = "마을 ID", required = true, example = "1~30"),
+            },
             responses = {
                     @ApiResponse(responseCode = "200", description = "성공, 페이로드에 array[json] 데이터 반환", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiResponses.class)))),
                     @ApiResponse(responseCode = "500", description = "실패, 에러 메시지 참조", content = @Content(schema = @Schema(implementation = ApiErrorMessage.class)))
@@ -399,6 +408,10 @@ public class StatController implements BackendApi {
 
     @Operation(method = "GET",
             summary = "양이 전쟁 전공 통계",
+            parameters = {
+                    @Parameter(name = "strt_dt", description = "날짜", required = true, example = "202505"),
+                    @Parameter(name = "villageId", description = "마을 ID", required = true, example = "1~30"),
+            },
             responses = {
                     @ApiResponse(responseCode = "200", description = "성공, 페이로드에 array[json] 데이터 반환", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiResponses.class)))),
                     @ApiResponse(responseCode = "500", description = "실패, 에러 메시지 참조", content = @Content(schema = @Schema(implementation = ApiErrorMessage.class)))

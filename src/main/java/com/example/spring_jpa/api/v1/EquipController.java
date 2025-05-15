@@ -7,6 +7,7 @@ import com.example.spring_jpa.api.Message;
 import com.example.spring_jpa.data.GuriSQL_EQUIP;
 import com.example.spring_jpa.object.TbUser;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -99,6 +100,9 @@ public class EquipController implements BackendApi {
 
     @Operation(method = "GET",
             summary = "장비 상세 리스트",
+            parameters = {
+                     @Parameter(name = "equipId", description = "장비 ID", required = true, example = "1")
+            },
             responses = {
                     @ApiResponse(responseCode = "200", description = "성공, 페이로드에 array[json] 데이터 반환", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiResponses.class)))),
                     @ApiResponse(responseCode = "500", description = "실패, 에러 메시지 참조", content = @Content(schema = @Schema(implementation = ApiErrorMessage.class)))

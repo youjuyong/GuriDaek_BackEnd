@@ -10,6 +10,7 @@ import com.example.spring_jpa.jwt.MemberRequestDto;
 import com.example.spring_jpa.jwt.TokenDto;
 import com.example.spring_jpa.jwt.TokenProvider;
 import com.example.spring_jpa.object.TbUser;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -86,6 +87,9 @@ public class UserController implements BackendApi {
 
     @Operation(method = "GET",
             summary = "ID 중복 체크",
+            parameters = {
+                    @Parameter(name = "userId", description = "유저 ID 중복 체크", required = true, example = "admin")
+            },
             responses = {
                     @ApiResponse(responseCode = "200", description = "성공, 페이로드에 array[json] 데이터 반환", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiResponses.class)))),
                     @ApiResponse(responseCode = "500", description = "실패, 에러 메시지 참조", content = @Content(schema = @Schema(implementation = ApiErrorMessage.class)))
@@ -198,6 +202,9 @@ public class UserController implements BackendApi {
 
     @Operation(method = "GET",
             summary = "ID 체크",
+            parameters = {
+                    @Parameter(name = "userId", description = "유저 ID 존재 여부 조회", required = true, example = "admin")
+            },
             responses = {
                     @ApiResponse(responseCode = "200", description = "성공, 페이로드에 array[json] 데이터 반환", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiResponses.class)))),
                     @ApiResponse(responseCode = "500", description = "실패, 에러 메시지 참조", content = @Content(schema = @Schema(implementation = ApiErrorMessage.class)))

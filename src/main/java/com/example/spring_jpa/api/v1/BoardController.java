@@ -15,6 +15,7 @@ import com.example.spring_jpa.object.Member;
 import com.example.spring_jpa.object.TbMainBord;
 import com.google.common.collect.Maps;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -107,6 +108,10 @@ public class BoardController implements BackendApi {
 
      @Operation(method = "GET",
             summary = "이벤트 날짜 조회",
+             parameters = {
+                     @Parameter(name = "event_term", description = "차수", required = true, example = "1"),
+                     @Parameter(name = "text_id", description = "공지 ID", required = true, example = "1"),
+            },
             responses = {
                     @ApiResponse(responseCode = "200", description = "성공, 페이로드에 array[json] 데이터 반환", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiResponses.class)))),
                     @ApiResponse(responseCode = "500", description = "실패, 에러 메시지 참조", content = @Content(schema = @Schema(implementation = ApiErrorMessage.class)))
@@ -134,6 +139,21 @@ public class BoardController implements BackendApi {
 
      @Operation(method = "PUT",
             summary = "이벤트 날짜 신청",
+            parameters = {
+                     @Parameter(name = "user_id", description = "유저 ID", required = true, example = "admin"),
+                     @Parameter(name = "text_id", description = "공지 ID", required = true, example = "1"),
+                     @Parameter(name = "date1", description = "날짜 1(1 : 가능, 0 : 불가능)", required = true, example = "1"),
+                     @Parameter(name = "date2", description = "날짜 2(1 : 가능, 0 : 불가능)", required = true, example = "1"),
+                     @Parameter(name = "date3", description = "날짜 3(1 : 가능, 0 : 불가능)", required = true, example = "1"),
+                     @Parameter(name = "date4", description = "날짜 4(1 : 가능, 0 : 불가능)", required = true, example = "1"),
+                     @Parameter(name = "time1", description = "시간 1(1 : 가능, 0 : 불가능)", required = true, example = "1"),
+                     @Parameter(name = "time2", description = "시간 2(1 : 가능, 0 : 불가능)", required = true, example = "1"),
+                     @Parameter(name = "time3", description = "시간 3(1 : 가능, 0 : 불가능)", required = true, example = "1"),
+                     @Parameter(name = "time4", description = "시간 4(1 : 가능, 0 : 불가능)", required = true, example = "1"),
+                     @Parameter(name = "time5", description = "시간 5(1 : 가능, 0 : 불가능)", required = true, example = "1"),
+                     @Parameter(name = "time6", description = "시간 6(1 : 가능, 0 : 불가능)", required = true, example = "1"),
+                     @Parameter(name = "time7", description = "시간 7(1 : 가능, 0 : 불가능)", required = true, example = "1"),
+            },
             responses = {
                     @ApiResponse(responseCode = "200", description = "성공, 페이로드에 array[json] 데이터 반환", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiResponses.class)))),
                     @ApiResponse(responseCode = "500", description = "실패, 에러 메시지 참조", content = @Content(schema = @Schema(implementation = ApiErrorMessage.class)))
@@ -188,6 +208,9 @@ public class BoardController implements BackendApi {
 
     @Operation(method = "GET",
             summary = "이벤트 차트 날짜 조회",
+            parameters = {
+                     @Parameter(name = "text_id", description = "공지 ID", required = true, example = "1")
+            },
             responses = {
                     @ApiResponse(responseCode = "200", description = "성공, 페이로드에 array[json] 데이터 반환", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiResponses.class)))),
                     @ApiResponse(responseCode = "500", description = "실패, 에러 메시지 참조", content = @Content(schema = @Schema(implementation = ApiErrorMessage.class)))
@@ -579,6 +602,9 @@ public class BoardController implements BackendApi {
 
     @Operation(method = "GET",
             summary = "공지 컨텐트 이미지 리스트",
+             parameters = {
+                     @Parameter(name = "text_id", description = "공지 ID", required = true, example = "1")
+             },
             responses = {
                     @ApiResponse(responseCode = "200", description = "성공, 페이로드에 array[json] 데이터 반환", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiResponses.class)))),
                     @ApiResponse(responseCode = "500", description = "실패, 에러 메시지 참조", content = @Content(schema = @Schema(implementation = ApiErrorMessage.class)))
