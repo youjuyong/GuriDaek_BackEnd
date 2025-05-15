@@ -74,7 +74,7 @@ public class HorseController implements BackendApi {
     }
 
     @Operation(method = "GET",
-            summary = "탈것 리스트 조회",
+            summary = "탈것 리스트 타입별 조회",
             parameters = {
                 @Parameter(name = "rideLimitType", description = "탈것 조건(전직캐 전용 : HUCO1, 20레벨 이상 : HUCO2)", required = true, example = "HUCO1, HUCO2"),
                 @Parameter(name = "horseHouseBurpType", description = "탈것 마구간 버퍼(없음 : SHBP0, 물리공격력 : SHBP1, 마법공격력 : SHBP2, 방어력 : SHBP3 )", required = true, example = "SHBP0, SHBP1, SHBP2, SHBP3"),
