@@ -118,7 +118,7 @@ public class SubWayController implements BackendApi {
     )
     public ResponseEntity<?> getSubWayInfo(@RequestParam Map<String, Object> map) {
         List<Map<String, Object>> subWayList = Arrays.asList();
-
+        System.out.println("list");
         try {
             subWayList = subwaySQL.getSubWayInfo(map);
 
