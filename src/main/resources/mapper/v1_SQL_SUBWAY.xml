@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTO Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.spring_jpa.data.GuriSQL_SUBWAY">
+
+	<insert id="insertStationInfo" parameterType="map">
+                INSERT INTO kf99.tb_station(
+						  FR_CODE
+						, STATION_NM
+						, STATION_NM_ENG
+						, STATION_CD
+                        , LINE_NUM
+                        , STATION_NM_JPN
+                        , STATION_NM_CHN
+                       , REG_DT
+                       , UPD_DT
+                    )
+                    VALUES (
+                             #{frCode}
+							   , #{stationNm}
+							   , #{stationNmEng}
+							   , #{stationCd}
+							, #{lineNum}
+							, #{stationNmJpn}
+							, #{stationNmChn}
+							, now()
+							, now()
+                           )ON DUPLICATE KEY
+        update
+        	STATION_NM = #{stationNm},
+                    	STATION_NM_ENG = #{stationNmEng},
+			      		STATION_CD = #{stationCd},
+                        LINE_NUM = #{lineNum},
+                        STATION_NM_JPN = #{stationNmJpn},
+                        STATION_NM_CHN = #{stationNmChn},
+                       	UPD_DT = now()
+	</insert>
+
+	<select id="getSubWayDirInfo" parameterType="string" resultType="map">
+		SELECT STATION_CD,
+		       STATION_NM
+		 FROM kf99.tb_station
+		WHERE FR_CODE = #{fcode}
+	</select>
+
+	<select id="getSubWayInfo" parameterType="map">
+		SELECT * FROM kf99.tb_station WHERE STATION_NM = #{statNm} ORDER BY LINE_NUM
+	</select>
+</mapper>
