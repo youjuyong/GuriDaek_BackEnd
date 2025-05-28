@@ -107,7 +107,7 @@ public class SubWayController implements BackendApi {
 				LOGGER.error(ex.toString());
 
 			} finally {
-                con.disconnect();
+                if ( con != null ) con.disconnect();
             }
 
         }
@@ -118,8 +118,9 @@ public class SubWayController implements BackendApi {
     )
     public ResponseEntity<?> getSubWayInfo(@RequestParam Map<String, Object> map) {
         List<Map<String, Object>> subWayList = Arrays.asList();
-        System.out.println("list");
+
         try {
+
             subWayList = subwaySQL.getSubWayInfo(map);
 
             for ( Map<String, Object > subWayMap : subWayList ) {
@@ -127,19 +128,35 @@ public class SubWayController implements BackendApi {
                 String zCode = "";
                 String preCode = "";
                 String afterCode = "";
+                boolean lengthDif = false;
                 boolean isNumber1 = Pattern.matches(REGEXP_ONLY_NUM, fcode.substring(0, 1));
 
                 if ( isNumber1 ) {
-                    fcode = fcode.substring(1);
                     zCode = fcode.replaceAll("[^a-zA-Z]", "");
+                    fcode = fcode.substring(1);
+
+                    int preLength = fcode.length();
+                    int afterLength = String.valueOf(Integer.parseInt(fcode)).length();
+                    if ( preLength != afterLength ) {
+                        lengthDif = true;
+                    }
                 }
 
                 int preNum   = Integer.parseInt(fcode) - 1;
                 int afterNum = Integer.parseInt(fcode) + 1;
 
                 if ( isNumber1 ) {
-                     preCode   = zCode + String.valueOf(preNum);
-                     afterCode = zCode + String.valueOf(afterNum);
+
+                    if ( lengthDif )
+                    {
+                         preCode   = zCode + '0' + String.valueOf(preNum);
+                        afterCode  = zCode + '0' + String.valueOf(afterNum);
+                    }else
+                    {
+                         preCode   = zCode + String.valueOf(preNum);
+                         afterCode = zCode + String.valueOf(afterNum);
+                    }
+
                 } else {
                     preCode   = String.valueOf(preNum);
                     afterCode = String.valueOf(afterNum);
@@ -148,10 +165,25 @@ public class SubWayController implements BackendApi {
                  Map<String, Object> preDir = subwaySQL.getSubWayDirInfo(preCode);
                  Map<String, Object> afterDir = subwaySQL.getSubWayDirInfo(afterCode);
 
+                if ( preDir == null && afterDir != null ) {
+                    System.out.println("TEST11111");
+                    subWayMap.put("preStationNm", "");
+                    subWayMap.put("afterStationNm", String.valueOf(afterDir.get("STATION_NM")));
+                    continue;
+                }
+
+                if ( preDir != null && afterDir == null )
+                {
+                    subWayMap.put("afterStationNm", "");
+                    subWayMap.put("preStationNm", String.valueOf(preDir.get("STATION_NM")));
+                    continue;
+                }
+
                 int preStationNum =  Integer.parseInt(String.valueOf(preDir.get("STATION_CD")));
                 int afterStationNum =  Integer.parseInt(String.valueOf(afterDir.get("STATION_CD")));
 
                 if ( preStationNum < afterStationNum ) {
+
                     subWayMap.put("preStationNm", String.valueOf(preDir.get("STATION_NM")));
                     subWayMap.put("afterStationNm", String.valueOf(afterDir.get("STATION_NM")));
                 } else {
@@ -159,6 +191,8 @@ public class SubWayController implements BackendApi {
                     subWayMap.put("afterStationNm", String.valueOf(preDir.get("STATION_NM")));
                 }
             }
+
+            log.info("subWayList !! " + subWayList);
         } catch ( RuntimeException ex ) {
           return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body(BackendApi.getErrorMessage(
