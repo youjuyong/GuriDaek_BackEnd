@@ -45,4 +45,27 @@
 	<select id="getSubWayInfo" parameterType="map">
 		SELECT * FROM kf99.tb_station WHERE STATION_NM = #{statNm} ORDER BY LINE_NUM
 	</select>
+
+	<select id="getSubWayFavorCount" parameterType="map" resultType="map">
+		SELECT * FROM kf99.tb_subway_favor WHERE SUBWAY_NAME = #{statNm} AND USER_ID = #{userid}
+	</select>
+
+	<delete id="deleteSubWayFavor" parameterType="map">
+		DELETE FROM kf99.tb_subway_favor WHERE SUBWAY_NAME = #{statNm} AND USER_ID = #{userid}
+	</delete>
+
+	<insert id="putSubWayFavor" parameterType="map">
+		INSERT INTO kf99.tb_subway_favor VALUES (#{userid}, #{statNm}, SYSDATE(), SYSDATE())
+	</insert>
+
+	<select id="getSubWayFavorList" parameterType="map">
+		SELECT *
+		  FROM kf99.tb_subway_favor tsf
+		 WHERE USER_ID = #{userid}
+	  ORDER BY SUBWAY_NAME DESC
+	</select>
+
+	<select id="getSubWayRouteList" parameterType="map">
+		SELECT STATION_NM, STATION_CD ,X_CRDN ,  Y_CRDN, CHANGE_STAT_YN   FROM TB_STATION WHERE LINE_NUM = #{routeName}
+	</select>
 </mapper>

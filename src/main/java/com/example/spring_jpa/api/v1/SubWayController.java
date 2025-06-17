@@ -10,6 +10,7 @@ import com.example.spring_jpa.data.GuriSQL_HERO;
 import com.example.spring_jpa.data.GuriSQL_SUBWAY;
 import com.example.spring_jpa.object.TbCommCd;
 import com.example.spring_jpa.utils.HttpConnectionService;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -165,8 +166,8 @@ public class SubWayController implements BackendApi {
                  Map<String, Object> preDir = subwaySQL.getSubWayDirInfo(preCode);
                  Map<String, Object> afterDir = subwaySQL.getSubWayDirInfo(afterCode);
 
+
                 if ( preDir == null && afterDir != null ) {
-                    System.out.println("TEST11111");
                     subWayMap.put("preStationNm", "");
                     subWayMap.put("afterStationNm", String.valueOf(afterDir.get("STATION_NM")));
                     continue;
@@ -205,6 +206,110 @@ public class SubWayController implements BackendApi {
         return ResponseEntity.ok(subWayList);
     }
 
+
+     @GetMapping(value = "subway-favor-info",
+            produces = {"application/json"}
+     )
+     public ResponseEntity<?> subwayFavorList(@RequestParam Map<String, Object> map) {
+        List<Map<String, Object>> subWayFavorList = Arrays.asList();
+
+        try {
+            subWayFavorList = subwaySQL.getSubWayFavorCount(map);
+        } catch ( RuntimeException ex ) {
+          return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(BackendApi.getErrorMessage(
+							HttpStatus.INTERNAL_SERVER_ERROR.value(),
+							Message.TRANSACTION_FAILURE,
+							ErrorCode.INVALID_PARAMETER,
+							ex.getMessage()
+					));
+        }
+
+        return ResponseEntity.ok(subWayFavorList);
+    }
+
+    @DeleteMapping(value = "subway-favor",
+            produces = {"application/json"}
+     )
+     public ResponseEntity<?> deleteSubwayFavor(@RequestParam Map<String, Object> map) {
+        int result = 0;
+
+        try {
+            result = subwaySQL.deleteSubWayFavor(map);
+        } catch ( RuntimeException ex ) {
+          return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(BackendApi.getErrorMessage(
+							HttpStatus.INTERNAL_SERVER_ERROR.value(),
+							Message.TRANSACTION_FAILURE,
+							ErrorCode.INVALID_PARAMETER,
+							ex.getMessage()
+					));
+        }
+
+        return ResponseEntity.ok(result);
+    }
+
+    @PutMapping(value = "subway-favor",
+            produces = {"application/json"}
+     )
+     public ResponseEntity<?> putSubwayFavor(@RequestParam Map<String, Object> map) {
+        int result = 0;
+        try {
+            result = subwaySQL.putSubWayFavor(map);
+        } catch ( RuntimeException ex ) {
+          return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(BackendApi.getErrorMessage(
+							HttpStatus.INTERNAL_SERVER_ERROR.value(),
+							Message.TRANSACTION_FAILURE,
+							ErrorCode.INVALID_PARAMETER,
+							ex.getMessage()
+					));
+        }
+
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping(value = "subway-favor-list",
+            produces = {"application/json"}
+    )
+     public ResponseEntity<?> getSubwayFavorList(@RequestParam Map<String, Object> map) {
+        List<Map<String, Object>> favorList = Lists.newArrayList();
+
+        try {
+            favorList = subwaySQL.getSubWayFavorList(map);
+        } catch ( RuntimeException ex ) {
+          return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(BackendApi.getErrorMessage(
+							HttpStatus.INTERNAL_SERVER_ERROR.value(),
+							Message.TRANSACTION_FAILURE,
+							ErrorCode.INVALID_PARAMETER,
+							ex.getMessage()
+					));
+        }
+
+        return ResponseEntity.ok(favorList);
+    }
+
+     @GetMapping(value = "subway-route-info",
+            produces = {"application/json"}
+     )
+     public ResponseEntity<?> getSubwayRouteList(@RequestParam Map<String, Object> map) {
+        List<Map<String, Object>> subwayList = Lists.newArrayList();
+
+        try {
+            subwayList = subwaySQL.getSubWayRouteList(map);
+        } catch ( RuntimeException ex ) {
+          return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(BackendApi.getErrorMessage(
+							HttpStatus.INTERNAL_SERVER_ERROR.value(),
+							Message.TRANSACTION_FAILURE,
+							ErrorCode.INVALID_PARAMETER,
+							ex.getMessage()
+					));
+        }
+
+        return ResponseEntity.ok(subwayList);
+    }
 }
 
 

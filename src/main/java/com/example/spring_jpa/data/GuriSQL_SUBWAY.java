@@ -12,5 +12,15 @@ public interface GuriSQL_SUBWAY {
     List<Map<String, Object>> getSubWayInfo (Map map);
 
     Map<String, Object> getSubWayDirInfo(String fcode);
+
+    List<Map<String, Object>> getSubWayFavorCount (Map map);
+
+    int deleteSubWayFavor ( Map map );
+
+    int putSubWayFavor ( Map map );
+
+    List<Map<String, Object>> getSubWayFavorList(Map map);
+
+    List<Map<String, Object>> getSubWayRouteList(Map map);
 }
 
