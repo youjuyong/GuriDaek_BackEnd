@@ -228,7 +228,7 @@ public class SubWayController implements BackendApi {
         return ResponseEntity.ok(subWayFavorList);
     }
 
-    @DeleteMapping(value = "subway-favor",
+    @DeleteMapping(value = "subway-favor-del",
             produces = {"application/json"}
      )
      public ResponseEntity<?> deleteSubwayFavor(@RequestParam Map<String, Object> map) {
@@ -249,7 +249,7 @@ public class SubWayController implements BackendApi {
         return ResponseEntity.ok(result);
     }
 
-    @PutMapping(value = "subway-favor",
+    @PutMapping(value = "subway-favor-put",
             produces = {"application/json"}
      )
      public ResponseEntity<?> putSubwayFavor(@RequestParam Map<String, Object> map) {
