@@ -55,7 +55,7 @@
 	</delete>
 
 	<insert id="putSubWayFavor" parameterType="map">
-		INSERT INTO kf99.tb_subway_favor VALUES (#{userid}, #{statNm}, SYSDATE(), SYSDATE())
+		INSERT INTO kf99.tb_subway_favor VALUES (#{userid}, #{statNm}, NOW(), NOW())
 	</insert>
 
 	<select id="getSubWayFavorList" parameterType="map">
