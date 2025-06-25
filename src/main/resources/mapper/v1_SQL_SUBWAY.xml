@@ -66,6 +66,6 @@
 	</select>
 
 	<select id="getSubWayRouteList" parameterType="map">
-		SELECT STATION_NM, STATION_CD ,X_CRDN ,  Y_CRDN, CHANGE_STAT_YN,  SUBWAY_ID  FROM TB_STATION WHERE LINE_NUM = #{routeName}
+		SELECT STATION_NM, STATION_CD ,X_CRDN ,  Y_CRDN, CHANGE_STAT_YN,  SUBWAY_ID  FROM kf99.tb_station WHERE LINE_NUM = #{routeName}
 	</select>
 </mapper>
